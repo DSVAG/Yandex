@@ -14,9 +14,15 @@ class StocksViewModel @Inject constructor(
 
     val stockFlow get() = stockRepository.stockFlow
 
-    fun sub() {
+    fun subscribe() {
         viewModelScope.launch {
             stockRepository.subscribe()
+        }
+    }
+
+    fun unSubscribe() {
+        viewModelScope.launch {
+            stockRepository.unSubscribe()
         }
     }
 

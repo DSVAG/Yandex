@@ -7,7 +7,6 @@ import com.dsvag.yandex.models.Stock
 import com.dsvag.yandex.models.StockSubscribeRequest
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import kotlinx.coroutines.flow.combine
 import okhttp3.WebSocket
 import javax.inject.Inject
 
@@ -17,22 +16,11 @@ class StockRepository @Inject constructor(
     private val apiFinnhubService: ApiFinnhubService,
     private val stockDao: StockDao,
 ) {
-    private val _stockFlow = stockDao.getStockInfoByTicker(tickerList)
-    private val _stockDataFlow = stockWebSocketListener.stocksData
 
-    val stockFlow = _stockFlow.combine(_stockDataFlow) { stockList, stockDataMap ->
-        stockList.map { stock ->
-            val stockData = stockDataMap[stock.ticker]
-
-            stock.copy(
-                lastPrice = stockData?.lastPrice ?: stock.lastPrice,
-                volume = stockData?.volume ?: stock.volume
-            )
-        }
-    }
+    val stockFlow get() = stockDao.getDefaultStocks()
 
     suspend fun subscribe() {
-        tickerList.forEach { ticker ->
+        defaultTickers.forEach { ticker ->
             if (stockDao.getStock(ticker) == null) {
                 val stockInfo = apiFinnhubService.fetchStockInfo(ticker)
                 stockDao.insert(
@@ -52,24 +40,20 @@ class StockRepository @Inject constructor(
         val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
         val jsonAdapter = moshi.adapter(StockSubscribeRequest::class.java)
 
-        tickerList.forEach { symbol ->
+        defaultTickers.forEach { symbol ->
             val msg = jsonAdapter.toJson(StockSubscribeRequest("subscribe", symbol))
-            webSocket.send(msg)
+            // webSocket.send(msg)
         }
     }
 
-    fun close() {
+    fun unSubscribe() {
         webSocket.close(1000, "End")
     }
 
-    suspend fun addToFavorite(stock: Stock) {
-        stockDao.insert(stock.copy(isFavorite = true))
-    }
-
     companion object {
-        private val tickerList = listOf(
-            "YNDX", "AAPL", "MSFT", "AMZN", "FB", "JPM", "NFLX", "JNJ", "GOOGL", "XOM", "BAC", "WFC", "INTC",
-            "T", "V", "CVX", "UNH", "PFE", "HD", "PG", "DIS", "VZ", "NVDA", "WMT",
+        private val defaultTickers = listOf(
+            "YNDX", "AAPL", "MSFT", "AMZN", "FB", "JPM", "NFLX", "JNJ", "GOOGL", "XOM", "IBM", "BAC", "WFC", "INTC",
+            "T", "V", "CVX", "UNH", "PFE", "HD", "PG", "VZ", "NVDA", "WMT",
         )
     }
 }

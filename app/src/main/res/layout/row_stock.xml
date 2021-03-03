@@ -27,6 +27,18 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:text="YNDX" />
 
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:id="@+id/isFavorite"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:button="@drawable/ic_star"
+        app:buttonTint="@color/favorite"
+        app:layout_constraintBottom_toBottomOf="@+id/ticker"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintStart_toEndOf="@+id/ticker"
+        app:layout_constraintTop_toTopOf="@+id/ticker" />
+
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/company"
         android:layout_width="0dp"
@@ -71,6 +83,6 @@
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toStartOf="@+id/declined"
         app:layout_constraintTop_toTopOf="@+id/declined"
-        tools:srcCompat="@tools:sample/avatars" />
+        tools:srcCompat="@drawable/ic_trending_up" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

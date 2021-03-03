@@ -5,11 +5,14 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import coil.clear
 import coil.load
 import com.dsvag.yandex.R
 import com.dsvag.yandex.databinding.RowStockBinding
 import com.dsvag.yandex.models.Stock
 import com.dsvag.yandex.ui.stockList.utils.StockDiffUtilsCallback
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class StockAdapter : RecyclerView.Adapter<StockAdapter.StockViewHolder>() {
 
@@ -21,13 +24,15 @@ class StockAdapter : RecyclerView.Adapter<StockAdapter.StockViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: StockViewHolder, position: Int) {
-        holder.bind(stockList[position], position % 2 == 0)
+        holder.bind(stockList[position])
     }
 
     override fun getItemCount(): Int = stockList.size
 
-    fun setData(newStockList: List<Stock>) {
-        DiffUtil.calculateDiff(StockDiffUtilsCallback(newStockList, stockList)).dispatchUpdatesTo(this)
+    suspend fun setData(newStockList: List<Stock>) = withContext(Dispatchers.Main) {
+        withContext(Dispatchers.IO) {
+            DiffUtil.calculateDiff(StockDiffUtilsCallback(newStockList, stockList))
+        }.dispatchUpdatesTo(this@StockAdapter)
 
         stockList.apply {
             clear()
@@ -41,7 +46,7 @@ class StockAdapter : RecyclerView.Adapter<StockAdapter.StockViewHolder>() {
 
         private val context = itemBinding.root.context
 
-        fun bind(stock: Stock, isEven: Boolean) {
+        fun bind(stock: Stock) {
             itemBinding.logo.background = context.getDrawable(R.drawable.bg_stock)
             itemBinding.logo.clipToOutline = true
 
@@ -49,26 +54,32 @@ class StockAdapter : RecyclerView.Adapter<StockAdapter.StockViewHolder>() {
             itemBinding.company.text = stock.company
             itemBinding.price.text = String.format("$%.3f", stock.lastPrice)
             itemBinding.declined.text = String.format("%.2f", stock.volume)
+            itemBinding.isFavorite.isChecked = stock.isFavorite
 
             itemBinding.logo.load(stock.logo) {
                 crossfade(true)
                 error(R.drawable.ic_error)
             }
 
-            if (isEven) {
-                itemBinding.root.backgroundTintList =
-                    ColorStateList.valueOf(context.getColor(R.color.grey_light))
+            itemBinding.root.backgroundTintList = if (adapterPosition % 2 == 0) {
+                ColorStateList.valueOf(context.getColor(R.color.grey_light))
             } else {
-                itemBinding.root.backgroundTintList =
-                    ColorStateList.valueOf(context.getColor(R.color.white))
+                ColorStateList.valueOf(context.getColor(R.color.white))
             }
 
-            if (stock.volume > 0) {
-                itemBinding.declined.setTextColor(context.getColor(R.color.green))
-                itemBinding.trending.load(R.drawable.ic_trending_up)
-            } else {
-                itemBinding.declined.setTextColor(context.getColor(R.color.red))
-                itemBinding.trending.load(R.drawable.ic_trending_down)
+            when {
+                stock.volume > 0 -> {
+                    itemBinding.declined.setTextColor(context.getColor(R.color.green))
+                    itemBinding.trending.load(R.drawable.ic_trending_up)
+                }
+                stock.volume < 0 -> {
+                    itemBinding.declined.setTextColor(context.getColor(R.color.red))
+                    itemBinding.trending.load(R.drawable.ic_trending_down)
+                }
+                else -> {
+                    itemBinding.declined.setTextColor(context.getColor(R.color.grey))
+                    itemBinding.trending.clear()
+                }
             }
         }
     }
