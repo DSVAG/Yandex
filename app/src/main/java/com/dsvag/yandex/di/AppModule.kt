@@ -1,34 +1,71 @@
 package com.dsvag.yandex.di
 
+import android.content.Context
+import androidx.room.Room
+import com.dsvag.yandex.data.local.AppDatabase
+import com.dsvag.yandex.data.remote.ApiFinnhubService
 import com.dsvag.yandex.data.remote.StockWebSocketListener
 import com.dsvag.yandex.data.repositoyes.StockRepository
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.WebSocket
-import java.util.concurrent.TimeUnit
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Retrofit
+import retrofit2.converter.moshi.MoshiConverterFactory
 
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
     @Provides
-    fun provideRequest() = Request
-        .Builder()
-        .url("wss://ws.finnhub.io?token=c0ru8bf48v6r6pnh9v00")
-        .build()
+    fun provideRequest(): Request {
+        return Request
+            .Builder()
+            .url("wss://ws.finnhub.io?token=c0ru8bf48v6r6pnh9v00")
+            .build()
+    }
 
     @Provides
-    fun provideOkHttpClient() = OkHttpClient
-        .Builder()
-        .readTimeout(60, TimeUnit.SECONDS)
-        .build()
+    fun provideInterceptor(): Interceptor {
+        return Interceptor { chain ->
+
+            val url = chain
+                .request()
+                .url
+                .newBuilder()
+                .addQueryParameter("token", "c0ru8bf48v6r6pnh9v00")
+                .build()
+
+            val request = chain
+                .request()
+                .newBuilder()
+                .url(url)
+                .build()
+
+            chain.proceed(request)
+        }
+    }
 
     @Provides
-    fun provideStockWebSocketListener() = StockWebSocketListener()
+    fun provideOkHttpClient(requestInterceptor: Interceptor): OkHttpClient {
+        return OkHttpClient.Builder()
+            .addInterceptor(requestInterceptor)
+            .addNetworkInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+            .build()
+    }
+
+    @Provides
+    fun provideStockWebSocketListener(): StockWebSocketListener {
+        return StockWebSocketListener()
+    }
 
     @Provides
     fun provideWebSocket(
@@ -40,7 +77,38 @@ object AppModule {
     }
 
     @Provides
-    fun provideStockRepository(stockWebSocketListener: StockWebSocketListener, webSocket: WebSocket): StockRepository {
-        return StockRepository(stockWebSocketListener, webSocket)
+    fun provideMoshi(): Moshi {
+        return Moshi.Builder().addLast(KotlinJsonAdapterFactory()).build()
+    }
+
+    @Provides
+    fun provideRetrofit(moshi: Moshi, okHttpClient: OkHttpClient): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl("https://finnhub.io/api/v1/")
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
+            .client(okHttpClient)
+            .build()
+    }
+
+    @Provides
+    fun provideApiFinnhubService(retrofit: Retrofit): ApiFinnhubService {
+        return retrofit.create(ApiFinnhubService::class.java)
+    }
+
+    @Provides
+    fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase {
+        return Room
+            .databaseBuilder(context, AppDatabase::class.java, "Stock.db")
+            .build()
+    }
+
+    @Provides
+    fun provideStockRepository(
+        stockWebSocketListener: StockWebSocketListener,
+        webSocket: WebSocket,
+        apiFinnhubService: ApiFinnhubService,
+        appDatabase: AppDatabase
+    ): StockRepository {
+        return StockRepository(stockWebSocketListener, webSocket, apiFinnhubService, appDatabase.stockDao())
     }
 }

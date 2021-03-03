@@ -2,7 +2,7 @@ package com.dsvag.yandex.models
 
 import com.squareup.moshi.Json
 
-data class StockSubRequest(
+data class StockSubscribeRequest(
     @Json(name = "type")
     val type: String,
 

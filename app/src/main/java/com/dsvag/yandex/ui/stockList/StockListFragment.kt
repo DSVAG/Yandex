@@ -4,10 +4,12 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.dsvag.yandex.R
 import com.dsvag.yandex.databinding.FragmentStockListBinding
 import com.dsvag.yandex.ui.viewBinding
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
 
 @AndroidEntryPoint
 class StockListFragment : Fragment(R.layout.fragment_stock_list) {
@@ -26,6 +28,11 @@ class StockListFragment : Fragment(R.layout.fragment_stock_list) {
             stocksViewModel.sub()
         }
 
+        lifecycleScope.launchWhenStarted {
+            stocksViewModel.stockFlow.collect { stockList ->
+                stockAdapter.setData(stockList)
+            }
+        }
 
     }
 }

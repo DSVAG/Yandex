@@ -45,7 +45,7 @@ class StockAdapter : RecyclerView.Adapter<StockAdapter.StockViewHolder>() {
             itemBinding.logo.background = context.getDrawable(R.drawable.bg_stock)
             itemBinding.logo.clipToOutline = true
 
-            itemBinding.ticker.text = stock.symbol
+            itemBinding.ticker.text = stock.ticker
             itemBinding.company.text = stock.company
             itemBinding.price.text = String.format("$%.3f", stock.lastPrice)
             itemBinding.declined.text = String.format("%.2f", stock.volume)
