@@ -44,7 +44,7 @@ class StockListFragment : Fragment(R.layout.fragment_stock_list) {
             findNavController().navigate(R.id.action_stockListFragment_to_searchFragment)
         }
 
-        lifecycleScope.launchWhenStarted {
+        lifecycleScope.launchWhenCreated {
             stocksViewModel.stockFlow.collect { stockList ->
                 stockAdapter.setData(stockList)
             }

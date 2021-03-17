@@ -3,20 +3,20 @@ package com.dsvag.yandex.ui.stockList
 import android.content.res.ColorStateList
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.RecyclerView
 import coil.clear
+import coil.decode.SvgDecoder
 import coil.load
+import coil.transform.RoundedCornersTransformation
 import com.dsvag.yandex.R
 import com.dsvag.yandex.databinding.RowStockBinding
 import com.dsvag.yandex.models.Stock
-import com.dsvag.yandex.ui.stockList.utils.StockDiffUtilsCallback
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import com.dsvag.yandex.ui.stockList.utils.StockDiffCallback
 
 class StockAdapter : RecyclerView.Adapter<StockAdapter.StockViewHolder>() {
 
-    private val stockList: MutableList<Stock> = mutableListOf()
+    private val stockListDiffer = AsyncListDiffer(this, StockDiffCallback())
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StockViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -24,20 +24,13 @@ class StockAdapter : RecyclerView.Adapter<StockAdapter.StockViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: StockViewHolder, position: Int) {
-        holder.bind(stockList[position])
+        holder.bind(stockListDiffer.currentList[position])
     }
 
-    override fun getItemCount(): Int = stockList.size
+    override fun getItemCount(): Int = stockListDiffer.currentList.size
 
-    suspend fun setData(newStockList: List<Stock>) = withContext(Dispatchers.Main) {
-        withContext(Dispatchers.IO) {
-            DiffUtil.calculateDiff(StockDiffUtilsCallback(newStockList, stockList))
-        }.dispatchUpdatesTo(this@StockAdapter)
-
-        stockList.apply {
-            clear()
-            addAll(newStockList)
-        }
+    fun setData(newStockList: List<Stock>) {
+        stockListDiffer.submitList(newStockList)
     }
 
     class StockViewHolder(
@@ -47,18 +40,17 @@ class StockAdapter : RecyclerView.Adapter<StockAdapter.StockViewHolder>() {
         private val context = itemBinding.root.context
 
         fun bind(stock: Stock) {
-            itemBinding.logo.background = context.getDrawable(R.drawable.bg_stock)
-            itemBinding.logo.clipToOutline = true
-
             itemBinding.ticker.text = stock.ticker
             itemBinding.company.text = stock.company
-            itemBinding.price.text = String.format("$%.3f", stock.lastPrice)
-            itemBinding.declined.text = String.format("%.2f", stock.volume)
+            itemBinding.price.text = String.format("$%.3f", stock.price)
+            itemBinding.declined.text = String.format("%.2f", stock.priceChange)
             itemBinding.isFavorite.isChecked = stock.isFavorite
 
-            itemBinding.logo.load(stock.logo) {
+            itemBinding.logo.load("https://yastatic.net/s3/fintech-icons/1/i/${stock.ticker}.svg") {
                 crossfade(true)
+                decoder(SvgDecoder(context))
                 error(R.drawable.ic_error)
+                transformations(RoundedCornersTransformation(48F))
             }
 
             itemBinding.root.backgroundTintList = if (adapterPosition % 2 == 0) {
@@ -68,11 +60,11 @@ class StockAdapter : RecyclerView.Adapter<StockAdapter.StockViewHolder>() {
             }
 
             when {
-                stock.volume > 0 -> {
+                stock.priceChange > 0 -> {
                     itemBinding.declined.setTextColor(context.getColor(R.color.green))
                     itemBinding.trending.load(R.drawable.ic_trending_up)
                 }
-                stock.volume < 0 -> {
+                stock.priceChange < 0 -> {
                     itemBinding.declined.setTextColor(context.getColor(R.color.red))
                     itemBinding.trending.load(R.drawable.ic_trending_down)
                 }

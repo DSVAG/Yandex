@@ -3,7 +3,7 @@ package com.dsvag.yandex.di
 import android.content.Context
 import androidx.room.Room
 import com.dsvag.yandex.data.local.AppDatabase
-import com.dsvag.yandex.data.remote.ApiFinnhubService
+import com.dsvag.yandex.data.remote.FinnhubApi
 import com.dsvag.yandex.data.remote.StockWebSocketListener
 import com.dsvag.yandex.data.repositoyes.StockRepository
 import com.squareup.moshi.Moshi
@@ -29,7 +29,8 @@ object AppModule {
     fun provideRequest(): Request {
         return Request
             .Builder()
-            .url("wss://ws.finnhub.io?token=c0ru8bf48v6r6pnh9v00")
+            .url("wss://ws.finnhub.io")
+            .addHeader("X-Finnhub-Token","c0ru8bf48v6r6pnh9v00")
             .build()
     }
 
@@ -91,8 +92,8 @@ object AppModule {
     }
 
     @Provides
-    fun provideApiFinnhubService(retrofit: Retrofit): ApiFinnhubService {
-        return retrofit.create(ApiFinnhubService::class.java)
+    fun provideApiFinnhubService(retrofit: Retrofit): FinnhubApi {
+        return retrofit.create(FinnhubApi::class.java)
     }
 
     @Provides
@@ -106,9 +107,9 @@ object AppModule {
     fun provideStockRepository(
         stockWebSocketListener: StockWebSocketListener,
         webSocket: WebSocket,
-        apiFinnhubService: ApiFinnhubService,
+        finnhubApi: FinnhubApi,
         appDatabase: AppDatabase
     ): StockRepository {
-        return StockRepository(stockWebSocketListener, webSocket, apiFinnhubService, appDatabase.stockDao())
+        return StockRepository(stockWebSocketListener, webSocket, finnhubApi, appDatabase.stockDao())
     }
 }

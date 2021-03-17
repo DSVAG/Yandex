@@ -3,10 +3,10 @@ buildscript {
     ext {
         kotlinVersion = "1.4.31"
         lifecycleVersion = "2.2.0"
-        navVersion = "2.3.3"
+        navVersion = "2.3.4"
         hiltVersion = "2.31.2-alpha"
         hiltViewModelVersion = "1.0.0-alpha03"
-        roomVersion = "2.3.0-beta02"
+        roomVersion = "2.3.0-beta03"
     }
 
     repositories {

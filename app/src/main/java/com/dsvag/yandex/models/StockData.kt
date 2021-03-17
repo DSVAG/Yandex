@@ -8,7 +8,4 @@ data class StockData(
 
     @Json(name = "s")
     val ticker: String,
-
-    @Json(name = "v")
-    val volume: Double
 )

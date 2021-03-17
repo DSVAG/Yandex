@@ -15,14 +15,14 @@ data class Stock(
     @ColumnInfo(name = "ticker")
     val ticker: String,
 
-    @ColumnInfo(name = "webUrl")
-    val webUrl: String,
+    @ColumnInfo(name = "price")
+    val price: Double,
 
-    @ColumnInfo(name = "lastPrice")
-    val lastPrice: Double,
+    @ColumnInfo(name = "priceChange")
+    val priceChange: Double,
 
-    @ColumnInfo(name = "volume")
-    val volume: Double,
+    @ColumnInfo(name = "priceChangePercent")
+    val priceChangePercent: Double,
 
     @ColumnInfo(name = "isFavorite")
     val isFavorite: Boolean

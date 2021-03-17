@@ -11,7 +11,4 @@ data class StockInfo(
 
     @Json(name = "ticker")
     val ticker: String,
-
-    @Json(name = "weburl")
-    val webUrl: String
 )
