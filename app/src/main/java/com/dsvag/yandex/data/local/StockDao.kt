@@ -18,9 +18,12 @@ interface StockDao {
     @Query("SELECT * FROM Stocks WHERE ticker = :ticker")
     suspend fun getStock(ticker: String): Stock?
 
+    @Query("SELECT ticker FROM Stocks")
+    suspend fun getStocksTicker(): List<String>
+
     @Query("SELECT * FROM Stocks WHERE isFavorite = 1")
     fun getFavoriteStock(): Flow<List<Stock>>
 
-    @Query("SELECT * FROM Stocks")
+    @Query("SELECT * FROM Stocks WHERE isDefault = 1")
     fun getDefaultStocks(): Flow<List<Stock>>
 }

@@ -6,8 +6,6 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "Stocks")
 data class Stock(
-    val logo: String,
-
     @ColumnInfo(name = "company")
     val company: String,
 
@@ -25,5 +23,9 @@ data class Stock(
     val priceChangePercent: Double,
 
     @ColumnInfo(name = "isFavorite")
-    val isFavorite: Boolean
+    val isFavorite: Boolean = false,
+
+    @ColumnInfo(name = "isDefault")
+    val isDefault: Boolean = false,
+
 )

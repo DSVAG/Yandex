@@ -45,7 +45,7 @@ class StockListFragment : Fragment(R.layout.fragment_stock_list) {
         }
 
         lifecycleScope.launchWhenCreated {
-            stocksViewModel.stockFlow.collect { stockList ->
+            stocksViewModel.defaultStockFlow.collect { stockList ->
                 stockAdapter.setData(stockList)
             }
         }
