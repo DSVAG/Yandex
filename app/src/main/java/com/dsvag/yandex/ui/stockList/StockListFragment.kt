@@ -20,17 +20,15 @@ class StockListFragment : Fragment(R.layout.fragment_stock_list) {
 
     private val stocksViewModel by viewModels<StocksViewModel>()
 
-    private val stockAdapter by lazy { StockAdapter() }
+    private val viewPagerAdapter by lazy { ViewPagerAdapter() }
+
+    private val defaultStockAdapter by lazy { StockAdapter() }
+
+    private val favoriteStockAdapter by lazy { StockAdapter() }
 
     private val onTabSelectedListener = object : TabLayout.OnTabSelectedListener {
         override fun onTabSelected(tab: TabLayout.Tab) {
-            when (tab.position) {
-                0 -> {
-                }
-                1 -> {
-                }
-                else -> error("Unknown position")
-            }
+            binding.viewPager.setCurrentItem(tab.position, true)
         }
 
         override fun onTabUnselected(tab: TabLayout.Tab?) {}
@@ -38,7 +36,10 @@ class StockListFragment : Fragment(R.layout.fragment_stock_list) {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        binding.stockList.adapter = stockAdapter
+        viewPagerAdapter.setAdapters(defaultStockAdapter, favoriteStockAdapter)
+        binding.viewPager.adapter = viewPagerAdapter
+
+        binding.tabLayout.addOnTabSelectedListener(onTabSelectedListener)
 
         binding.search.setOnClickListener {
             findNavController().navigate(R.id.action_stockListFragment_to_searchFragment)
@@ -46,7 +47,11 @@ class StockListFragment : Fragment(R.layout.fragment_stock_list) {
 
         lifecycleScope.launchWhenCreated {
             stocksViewModel.defaultStockFlow.collect { stockList ->
-                stockAdapter.setData(stockList)
+                defaultStockAdapter.setData(stockList)
+            }
+
+            stocksViewModel.favoriteStockFlow.collect { stockList ->
+                favoriteStockAdapter.setData(stockList)
             }
         }
     }
@@ -57,15 +62,8 @@ class StockListFragment : Fragment(R.layout.fragment_stock_list) {
         stocksViewModel.subscribe()
     }
 
-    override fun onStart() {
-        super.onStart()
-
-        binding.tabLayout.addOnTabSelectedListener(onTabSelectedListener)
+    private fun changeFavoriteStatus(ticker: String, isFavorite: Boolean) {
+        stocksViewModel.changeFavoriteStatus(ticker, isFavorite)
     }
 
-    override fun onPause() {
-        super.onPause()
-
-        binding.tabLayout.clearOnTabSelectedListeners()
-    }
 }

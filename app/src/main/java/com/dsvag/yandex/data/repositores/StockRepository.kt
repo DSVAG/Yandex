@@ -31,9 +31,11 @@ class StockRepository @Inject constructor(
     private val moshi by lazy { Moshi.Builder().add(KotlinJsonAdapterFactory()).build() }
     private val jsonAdapter by lazy { moshi.adapter(StockDataResponse::class.java) }
 
+    private var webSocket: WebSocket? = null
+
     private suspend fun observeStockChanges(tickers: List<String>): Flow<List<StockData>> {
         return callbackFlow {
-            val webSocket = okHttpClient.newWebSocket(request, object : WebSocketListener() {
+            webSocket = okHttpClient.newWebSocket(request, object : WebSocketListener() {
 
                 override fun onMessage(webSocket: WebSocket, text: String) {
                     jsonAdapter.fromJson(text)?.let { stockDataResponse ->
@@ -53,11 +55,10 @@ class StockRepository @Inject constructor(
             })
 
             tickers.forEach { ticker ->
-                val msg = "{\"type\":\"subscribe\",\"symbol\":\"$ticker\"}"
-                webSocket.send(msg)
+                webSocket?.send(generateMsg("subscribe", ticker))
             }
 
-            awaitClose { webSocket.close(1000, null) }
+            awaitClose { webSocket?.close(1000, null) }
         }
     }
 
@@ -89,7 +90,6 @@ class StockRepository @Inject constructor(
         observeStockChanges(defaultTickers.toList()).collect { stockDataList ->
             stockDataList.forEach { (newStockPrice, ticker) ->
                 stockDao.getStock(ticker)?.let { stock ->
-
                     stockDao.update(stock.updatePrice(newStockPrice))
                 }
             }
@@ -101,6 +101,48 @@ class StockRepository @Inject constructor(
         val priceChangePercent = ((newPrice - this.price) / this.price).absoluteValue
 
         return this.copy(price = newPrice, priceChange = priceChange, priceChangePercent = priceChangePercent)
+    }
+
+    suspend fun addToFavorite(ticker: String) {
+        defaultTickers.add(ticker)
+
+        val stock = stockDao.getStock(ticker)
+
+        if (stock == null) {
+            val stockInfo = finnhubApi.fetchStockInfo(ticker)
+            val stockPrice = finnhubApi.fetchCurrentPrice(ticker)
+
+            stockDao.insert(
+                Stock(
+                    stockInfo.company,
+                    stockInfo.ticker,
+                    stockPrice.c,
+                    0.0,
+                    0.0,
+                    isFavorite = true,
+                )
+            )
+
+            webSocket?.send(generateMsg("subscribe", ticker))
+        } else {
+            stockDao.update(stock.copy(isFavorite = true))
+        }
+    }
+
+    suspend fun removeFromFavorite(ticker: String) {
+        stockDao.getStock(ticker)?.let { stock ->
+            if (stock.isDefault) {
+                stockDao.update(stock.copy(isFavorite = false))
+            } else {
+                webSocket?.send(generateMsg("unsubscribe", ticker))
+                defaultTickers.remove(ticker)
+                stockDao.delete(stock)
+            }
+        }
+    }
+
+    private fun generateMsg(command: String, ticker: String): String {
+        return "{\"type\":\"$command\",\"symbol\":\"$ticker\"}"
     }
 
     companion object {

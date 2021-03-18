@@ -22,4 +22,14 @@ class StocksViewModel @Inject constructor(
         }
     }
 
+    fun changeFavoriteStatus(ticker: String, isFavorite: Boolean) {
+        viewModelScope.launch {
+            if (isFavorite) {
+                stockRepository.addToFavorite(ticker)
+            } else {
+                stockRepository.removeFromFavorite(ticker)
+            }
+        }
+    }
+
 }

@@ -10,6 +10,7 @@
         <entry key="app/src/main/res/layout/fragment_search.xml" value="0.27870370370370373" />
         <entry key="app/src/main/res/layout/fragment_stock_details.xml" value="0.27870370370370373" />
         <entry key="app/src/main/res/layout/fragment_stock_list.xml" value="0.27870370370370373" />
+        <entry key="app/src/main/res/layout/item_list_stock.xml" value="0.21481481481481482" />
         <entry key="app/src/main/res/layout/row_stock.xml" value="0.27870370370370373" />
       </map>
     </option>
