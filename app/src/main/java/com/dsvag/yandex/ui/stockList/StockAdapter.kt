@@ -14,13 +14,20 @@ import com.dsvag.yandex.databinding.ItemStockBinding
 import com.dsvag.yandex.models.Stock
 import com.dsvag.yandex.ui.stockList.utils.StockDiffCallback
 
-class StockAdapter : RecyclerView.Adapter<StockAdapter.StockViewHolder>() {
+class StockAdapter(
+    private val onItemClick: (String) -> Unit,
+    private val favoriteClick: (String, Boolean) -> Unit,
+) : RecyclerView.Adapter<StockAdapter.StockViewHolder>() {
 
     private val stockListDiffer = AsyncListDiffer(this, StockDiffCallback())
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StockViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        return StockViewHolder(ItemStockBinding.inflate(inflater, parent, false))
+        return StockViewHolder(
+            ItemStockBinding.inflate(inflater, parent, false),
+            onItemClick,
+            favoriteClick,
+        )
     }
 
     override fun onBindViewHolder(holder: StockViewHolder, position: Int) {
@@ -35,6 +42,8 @@ class StockAdapter : RecyclerView.Adapter<StockAdapter.StockViewHolder>() {
 
     class StockViewHolder(
         private val itemBinding: ItemStockBinding,
+        private val onItemClick: (String) -> Unit,
+        private val favoriteClick: (String, Boolean) -> Unit,
     ) : RecyclerView.ViewHolder(itemBinding.root) {
 
         private val context = itemBinding.root.context
@@ -44,6 +53,10 @@ class StockAdapter : RecyclerView.Adapter<StockAdapter.StockViewHolder>() {
             itemBinding.company.text = stock.company
             itemBinding.price.text = String.format("$%.3f", stock.price)
             itemBinding.declined.text = String.format("$%.2f (%.3f)", stock.priceChange, stock.priceChangePercent)
+
+            itemBinding.isFavorite.setOnCheckedChangeListener { _, isChecked ->
+                favoriteClick(stock.ticker, isChecked)
+            }
 
             itemBinding.isFavorite.isChecked = stock.isFavorite
 

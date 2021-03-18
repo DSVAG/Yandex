@@ -20,11 +20,11 @@ class StockListFragment : Fragment(R.layout.fragment_stock_list) {
 
     private val stocksViewModel by viewModels<StocksViewModel>()
 
-    private val viewPagerAdapter by lazy { ViewPagerAdapter() }
+    private val viewPagerAdapter by lazy(LazyThreadSafetyMode.NONE) { ViewPagerAdapter() }
 
-    private val defaultStockAdapter by lazy { StockAdapter() }
+    private val defaultStockAdapter by lazy(LazyThreadSafetyMode.NONE) { StockAdapter({}, ::changeFavoriteStatus) }
 
-    private val favoriteStockAdapter by lazy { StockAdapter() }
+    private val favoriteStockAdapter by lazy(LazyThreadSafetyMode.NONE) { StockAdapter({}, ::changeFavoriteStatus) }
 
     private val onTabSelectedListener = object : TabLayout.OnTabSelectedListener {
         override fun onTabSelected(tab: TabLayout.Tab) {
@@ -45,11 +45,13 @@ class StockListFragment : Fragment(R.layout.fragment_stock_list) {
             findNavController().navigate(R.id.action_stockListFragment_to_searchFragment)
         }
 
-        lifecycleScope.launchWhenCreated {
+        lifecycleScope.launchWhenStarted {
             stocksViewModel.defaultStockFlow.collect { stockList ->
                 defaultStockAdapter.setData(stockList)
             }
+        }
 
+        lifecycleScope.launchWhenStarted {
             stocksViewModel.favoriteStockFlow.collect { stockList ->
                 favoriteStockAdapter.setData(stockList)
             }
