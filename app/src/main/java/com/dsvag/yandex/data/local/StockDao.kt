@@ -12,14 +12,17 @@ interface StockDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(stocks: List<Stock>)
 
+    @Update
+    suspend fun update(stock: Stock)
+
     @Delete
     suspend fun delete(stock: Stock)
 
     @Query("SELECT * FROM Stocks WHERE ticker = :ticker")
     suspend fun getStock(ticker: String): Stock?
 
-    @Query("SELECT ticker FROM Stocks")
-    suspend fun getStocksTicker(): List<String>
+    @Query("SELECT ticker FROM stocks WHERE isFavorite = 1")
+    suspend fun getFavoriteTicker(): List<String>
 
     @Query("SELECT * FROM Stocks WHERE isFavorite = 1")
     fun getFavoriteStock(): Flow<List<Stock>>

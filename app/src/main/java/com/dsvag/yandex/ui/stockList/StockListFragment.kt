@@ -51,17 +51,21 @@ class StockListFragment : Fragment(R.layout.fragment_stock_list) {
         }
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        stocksViewModel.subscribe()
+    }
+
     override fun onStart() {
         super.onStart()
 
-        stocksViewModel.subscribe()
         binding.tabLayout.addOnTabSelectedListener(onTabSelectedListener)
     }
 
     override fun onPause() {
         super.onPause()
 
-        stocksViewModel.unSubscribe()
         binding.tabLayout.clearOnTabSelectedListeners()
     }
 }

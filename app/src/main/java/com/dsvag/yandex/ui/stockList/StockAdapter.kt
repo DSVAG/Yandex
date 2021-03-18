@@ -43,7 +43,8 @@ class StockAdapter : RecyclerView.Adapter<StockAdapter.StockViewHolder>() {
             itemBinding.ticker.text = stock.ticker
             itemBinding.company.text = stock.company
             itemBinding.price.text = String.format("$%.3f", stock.price)
-            itemBinding.declined.text = String.format("%.2f", stock.priceChange)
+            itemBinding.declined.text = String.format("$%.2f (%.3f)", stock.priceChange, stock.priceChangePercent)
+
             itemBinding.isFavorite.isChecked = stock.isFavorite
 
             itemBinding.logo.load("https://yastatic.net/s3/fintech-icons/1/i/${stock.ticker}.svg") {

@@ -4,8 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.dsvag.yandex.data.local.AppDatabase
 import com.dsvag.yandex.data.remote.FinnhubApi
-import com.dsvag.yandex.data.remote.StockWebSocketListener
-import com.dsvag.yandex.data.repositoyes.StockRepository
+import com.dsvag.yandex.data.repositores.StockRepository
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
@@ -16,7 +15,6 @@ import dagger.hilt.components.SingletonComponent
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.WebSocket
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -30,7 +28,7 @@ object AppModule {
         return Request
             .Builder()
             .url("wss://ws.finnhub.io")
-            .addHeader("X-Finnhub-Token","c0ru8bf48v6r6pnh9v00")
+            .addHeader("X-Finnhub-Token", "c0ru8bf48v6r6pnh9v00")
             .build()
     }
 
@@ -64,20 +62,6 @@ object AppModule {
     }
 
     @Provides
-    fun provideStockWebSocketListener(): StockWebSocketListener {
-        return StockWebSocketListener()
-    }
-
-    @Provides
-    fun provideWebSocket(
-        okHttpClient: OkHttpClient,
-        request: Request,
-        stockWebSocketListener: StockWebSocketListener
-    ): WebSocket {
-        return okHttpClient.newWebSocket(request, stockWebSocketListener)
-    }
-
-    @Provides
     fun provideMoshi(): Moshi {
         return Moshi.Builder().addLast(KotlinJsonAdapterFactory()).build()
     }
@@ -92,7 +76,7 @@ object AppModule {
     }
 
     @Provides
-    fun provideApiFinnhubService(retrofit: Retrofit): FinnhubApi {
+    fun provideApiFinnhub(retrofit: Retrofit): FinnhubApi {
         return retrofit.create(FinnhubApi::class.java)
     }
 
@@ -105,11 +89,11 @@ object AppModule {
 
     @Provides
     fun provideStockRepository(
-        stockWebSocketListener: StockWebSocketListener,
-        webSocket: WebSocket,
         finnhubApi: FinnhubApi,
-        appDatabase: AppDatabase
+        appDatabase: AppDatabase,
+        okHttpClient: OkHttpClient,
+        request: Request,
     ): StockRepository {
-        return StockRepository(stockWebSocketListener, webSocket, finnhubApi, appDatabase.stockDao())
+        return StockRepository(finnhubApi, appDatabase.stockDao(), okHttpClient, request)
     }
 }

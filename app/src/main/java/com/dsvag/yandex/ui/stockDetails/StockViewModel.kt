@@ -2,7 +2,7 @@ package com.dsvag.yandex.ui.stockDetails
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dsvag.yandex.data.repositoyes.StockRepository
+import com.dsvag.yandex.data.repositores.StockRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
