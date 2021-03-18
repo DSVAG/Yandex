@@ -2,32 +2,32 @@ package com.dsvag.yandex.ui.stockList
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dsvag.yandex.data.repositores.StockRepository
+import com.dsvag.yandex.data.repositories.StocksRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class StocksViewModel @Inject constructor(
-    private val stockRepository: StockRepository,
+    private val stocksRepository: StocksRepository,
 ) : ViewModel() {
 
-    val defaultStockFlow get() = stockRepository.defaultStockFlow
+    val defaultStockFlow get() = stocksRepository.defaultStockFlow
 
-    val favoriteStockFlow get() = stockRepository.favoriteStockFlow
+    val favoriteStockFlow get() = stocksRepository.favoriteStockFlow
 
     fun subscribe() {
         viewModelScope.launch {
-            stockRepository.subscribe()
+            stocksRepository.subscribe()
         }
     }
 
     fun changeFavoriteStatus(ticker: String, isFavorite: Boolean) {
         viewModelScope.launch {
             if (isFavorite) {
-                stockRepository.addToFavorite(ticker)
+                stocksRepository.addToFavorite(ticker)
             } else {
-                stockRepository.removeFromFavorite(ticker)
+                stocksRepository.removeFromFavorite(ticker)
             }
         }
     }

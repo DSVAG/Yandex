@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.dsvag.yandex.data.local.AppDatabase
 import com.dsvag.yandex.data.remote.FinnhubApi
-import com.dsvag.yandex.data.repositores.StockRepository
+import com.dsvag.yandex.data.repositories.StocksRepository
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
@@ -93,7 +93,7 @@ object AppModule {
         appDatabase: AppDatabase,
         okHttpClient: OkHttpClient,
         request: Request,
-    ): StockRepository {
-        return StockRepository(finnhubApi, appDatabase.stockDao(), okHttpClient, request)
+    ): StocksRepository {
+        return StocksRepository(finnhubApi, appDatabase.stockDao(), okHttpClient, request)
     }
 }

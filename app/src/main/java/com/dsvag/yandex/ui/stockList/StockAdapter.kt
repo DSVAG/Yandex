@@ -1,8 +1,10 @@
 package com.dsvag.yandex.ui.stockList
 
 import android.content.res.ColorStateList
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.RecyclerView
 import coil.clear
@@ -15,7 +17,6 @@ import com.dsvag.yandex.models.Stock
 import com.dsvag.yandex.ui.stockList.utils.StockDiffCallback
 
 class StockAdapter(
-    private val onItemClick: (String) -> Unit,
     private val favoriteClick: (String, Boolean) -> Unit,
 ) : RecyclerView.Adapter<StockAdapter.StockViewHolder>() {
 
@@ -25,7 +26,6 @@ class StockAdapter(
         val inflater = LayoutInflater.from(parent.context)
         return StockViewHolder(
             ItemStockBinding.inflate(inflater, parent, false),
-            onItemClick,
             favoriteClick,
         )
     }
@@ -42,7 +42,6 @@ class StockAdapter(
 
     class StockViewHolder(
         private val itemBinding: ItemStockBinding,
-        private val onItemClick: (String) -> Unit,
         private val favoriteClick: (String, Boolean) -> Unit,
     ) : RecyclerView.ViewHolder(itemBinding.root) {
 
@@ -58,9 +57,14 @@ class StockAdapter(
                 favoriteClick(stock.ticker, isChecked)
             }
 
+            itemBinding.root.setOnClickListener { view ->
+                val bundle = Bundle().apply { putString("ticker", stock.ticker) }
+                view.findNavController().navigate(R.id.stockDetailsFragment, bundle)
+            }
+
             itemBinding.isFavorite.isChecked = stock.isFavorite
 
-            itemBinding.logo.load("https://yastatic.net/s3/fintech-icons/1/i/${stock.ticker}.svg") {
+            itemBinding.logo.load(stock.logo) {
                 crossfade(true)
                 decoder(SvgDecoder(context))
                 error(R.drawable.ic_error)

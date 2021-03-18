@@ -8,6 +8,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.dsvag.yandex.R
 import com.dsvag.yandex.databinding.FragmentSearchBinding
+import com.dsvag.yandex.ui.stockList.StockAdapter
 import com.dsvag.yandex.ui.viewBinding
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -18,10 +19,10 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
 
     private val searchViewModel by viewModels<StockSearchViewModel>()
 
-    //private val stockAdapter by lazy { StockAdapter({}, { }) }
+    private val stockAdapter by lazy { StockAdapter({ ticker, isFavorite -> }) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        //   binding.searchStockList.adapter = stockAdapter
+        binding.searchStockList.adapter = stockAdapter
         binding.back.setOnClickListener { findNavController().popBackStack() }
         binding.clear.setOnClickListener { binding.search.text?.clear() }
 

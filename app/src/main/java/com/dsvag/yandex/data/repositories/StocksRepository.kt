@@ -1,4 +1,4 @@
-package com.dsvag.yandex.data.repositores
+package com.dsvag.yandex.data.repositories
 
 import com.dsvag.yandex.data.local.StockDao
 import com.dsvag.yandex.data.remote.FinnhubApi
@@ -18,7 +18,7 @@ import okhttp3.*
 import javax.inject.Inject
 import kotlin.math.absoluteValue
 
-class StockRepository @Inject constructor(
+class StocksRepository @Inject constructor(
     private val finnhubApi: FinnhubApi,
     private val stockDao: StockDao,
     private val okHttpClient: OkHttpClient,
@@ -75,6 +75,7 @@ class StockRepository @Inject constructor(
                 stockDao.insert(
                     Stock(
                         stockInfo.company,
+                        "https://yastatic.net/s3/fintech-icons/1/i/${stockInfo.ticker}.svg",
                         stockInfo.ticker,
                         stockPrice.c,
                         0.0,
@@ -115,6 +116,7 @@ class StockRepository @Inject constructor(
             stockDao.insert(
                 Stock(
                     stockInfo.company,
+                    "https://yastatic.net/s3/fintech-icons/1/i/${stockInfo.ticker}.svg",
                     stockInfo.ticker,
                     stockPrice.c,
                     0.0,

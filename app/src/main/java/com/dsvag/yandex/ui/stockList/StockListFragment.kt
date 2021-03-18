@@ -9,7 +9,8 @@ import androidx.navigation.fragment.findNavController
 import com.dsvag.yandex.R
 import com.dsvag.yandex.databinding.FragmentStockListBinding
 import com.dsvag.yandex.ui.viewBinding
-import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
+import com.google.android.material.tabs.TabLayoutMediator.TabConfigurationStrategy
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 
@@ -22,24 +23,24 @@ class StockListFragment : Fragment(R.layout.fragment_stock_list) {
 
     private val viewPagerAdapter by lazy(LazyThreadSafetyMode.NONE) { ViewPagerAdapter() }
 
-    private val defaultStockAdapter by lazy(LazyThreadSafetyMode.NONE) { StockAdapter({}, ::changeFavoriteStatus) }
+    private val defaultStockAdapter by lazy(LazyThreadSafetyMode.NONE) { StockAdapter(::changeFavoriteStatus) }
 
-    private val favoriteStockAdapter by lazy(LazyThreadSafetyMode.NONE) { StockAdapter({}, ::changeFavoriteStatus) }
+    private val favoriteStockAdapter by lazy(LazyThreadSafetyMode.NONE) { StockAdapter(::changeFavoriteStatus) }
 
-    private val onTabSelectedListener = object : TabLayout.OnTabSelectedListener {
-        override fun onTabSelected(tab: TabLayout.Tab) {
-            binding.viewPager.setCurrentItem(tab.position, true)
+    private val tabConfigurationStrategy = TabConfigurationStrategy { tab, position ->
+        when (position) {
+            0 -> tab.text = requireContext().getString(R.string.stocks)
+            1 -> tab.text = requireContext().getString(R.string.favorite)
+            else -> error("Unknown position")
         }
-
-        override fun onTabUnselected(tab: TabLayout.Tab?) {}
-        override fun onTabReselected(tab: TabLayout.Tab?) {}
     }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         viewPagerAdapter.setAdapters(defaultStockAdapter, favoriteStockAdapter)
         binding.viewPager.adapter = viewPagerAdapter
 
-        binding.tabLayout.addOnTabSelectedListener(onTabSelectedListener)
+        TabLayoutMediator(binding.tabLayout, binding.viewPager, tabConfigurationStrategy).attach()
 
         binding.search.setOnClickListener {
             findNavController().navigate(R.id.action_stockListFragment_to_searchFragment)

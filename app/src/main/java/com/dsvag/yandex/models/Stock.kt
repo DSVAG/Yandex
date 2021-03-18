@@ -9,6 +9,9 @@ data class Stock(
     @ColumnInfo(name = "company")
     val company: String,
 
+    @ColumnInfo(name = "logo")
+    val logo: String,
+
     @PrimaryKey
     @ColumnInfo(name = "ticker")
     val ticker: String,
@@ -28,4 +31,4 @@ data class Stock(
     @ColumnInfo(name = "isDefault")
     val isDefault: Boolean = false,
 
-)
+    )

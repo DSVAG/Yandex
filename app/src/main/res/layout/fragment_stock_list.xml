@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -20,7 +19,7 @@
         android:paddingHorizontal="16dp"
         android:paddingVertical="8dp"
         android:text="@string/find_company_or_ticker"
-        android:textAppearance="@style/TextAppearance.App.Headline1"
+        android:textAppearance="@style/TextAppearance.App.Headline2"
         android:textColor="?attr/colorOnPrimary" />
 
     <com.google.android.material.tabs.TabLayout
@@ -28,20 +27,7 @@
         style="@style/Theme.TabLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="8dp"
-        app:tabMode="fixed">
-
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/stocks" />
-
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/favorite" />
-
-    </com.google.android.material.tabs.TabLayout>
+        android:layout_marginHorizontal="8dp" />
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPager"

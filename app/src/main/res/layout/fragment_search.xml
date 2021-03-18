@@ -48,7 +48,7 @@
                     android:inputType="textShortMessage"
                     android:maxLines="1"
                     android:paddingVertical="8dp"
-                    android:textAppearance="@style/TextAppearance.App.Headline1"
+                    android:textAppearance="@style/TextAppearance.App.Headline2"
                     android:textColor="?attr/colorOnPrimary"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/clear"
