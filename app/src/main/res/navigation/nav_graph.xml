@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/stockListFragment"
-        android:name="com.dsvag.yandex.ui.stockList.StockListFragment"
+        android:name="com.dsvag.yandex.ui.list.StockListFragment"
         android:label="fragment_stock_list"
         tools:layout="@layout/fragment_stock_list">
 
@@ -47,7 +47,7 @@
 
     <fragment
         android:id="@+id/stockDetailsFragment"
-        android:name="com.dsvag.yandex.ui.stockDetails.StockDetailsFragment"
+        android:name="com.dsvag.yandex.ui.stock.StockDetailsFragment"
         android:label="fragment_stock_details"
         tools:layout="@layout/fragment_stock_details">
 

@@ -76,8 +76,10 @@
         android:id="@+id/loadingIndicator"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_anchor="@id/searchStockList"
-        app:layout_anchorGravity="top" />
+        android:elevation="16dp"
+        app:indicatorColor="@color/red"
+        app:layout_anchor="@id/appBarLayout"
+        app:layout_anchorGravity="bottom" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/searchStockList"

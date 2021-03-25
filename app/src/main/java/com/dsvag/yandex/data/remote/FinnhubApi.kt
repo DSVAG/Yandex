@@ -1,7 +1,7 @@
 package com.dsvag.yandex.data.remote
 
-import com.dsvag.yandex.models.StockInfo
-import com.dsvag.yandex.models.StockPriceInfo
+import com.dsvag.yandex.models.finnhub.StockInfo
+import com.dsvag.yandex.models.finnhub.StockPriceInfo
 import retrofit2.http.GET
 import retrofit2.http.Query
 

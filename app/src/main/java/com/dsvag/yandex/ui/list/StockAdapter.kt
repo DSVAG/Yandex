@@ -1,4 +1,4 @@
-package com.dsvag.yandex.ui.stockList
+package com.dsvag.yandex.ui.list
 
 import android.content.res.ColorStateList
 import android.os.Bundle
@@ -14,10 +14,10 @@ import coil.transform.RoundedCornersTransformation
 import com.dsvag.yandex.R
 import com.dsvag.yandex.databinding.ItemStockBinding
 import com.dsvag.yandex.models.Stock
-import com.dsvag.yandex.ui.stockList.utils.StockDiffCallback
+import com.dsvag.yandex.ui.list.utils.StockDiffCallback
 
 class StockAdapter(
-    private val favoriteClick: (String, Boolean) -> Unit,
+    private val favoriteClick: (Stock, Boolean) -> Unit,
 ) : RecyclerView.Adapter<StockAdapter.StockViewHolder>() {
 
     private val stockListDiffer = AsyncListDiffer(this, StockDiffCallback())
@@ -42,7 +42,7 @@ class StockAdapter(
 
     class StockViewHolder(
         private val itemBinding: ItemStockBinding,
-        private val favoriteClick: (String, Boolean) -> Unit,
+        private val favoriteClick: (Stock, Boolean) -> Unit,
     ) : RecyclerView.ViewHolder(itemBinding.root) {
 
         private val context = itemBinding.root.context
@@ -50,11 +50,11 @@ class StockAdapter(
         fun bind(stock: Stock) {
             itemBinding.ticker.text = stock.ticker
             itemBinding.company.text = stock.company
-            itemBinding.price.text = String.format("$%.3f", stock.price)
+            itemBinding.price.text = String.format("$%.2f", stock.price)
             itemBinding.declined.text = String.format("$%.2f (%.3f)", stock.priceChange, stock.priceChangePercent)
 
             itemBinding.isFavorite.setOnCheckedChangeListener { _, isChecked ->
-                favoriteClick(stock.ticker, isChecked)
+                favoriteClick(stock, isChecked)
             }
 
             itemBinding.root.setOnClickListener { view ->
@@ -64,7 +64,7 @@ class StockAdapter(
 
             itemBinding.isFavorite.isChecked = stock.isFavorite
 
-            itemBinding.logo.load(stock.logo) {
+            itemBinding.logo.load("https://yastatic.net/s3/fintech-icons/1/i/${stock.logo}.svg") {
                 crossfade(true)
                 decoder(SvgDecoder(context))
                 error(R.drawable.ic_error)

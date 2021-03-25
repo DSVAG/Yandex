@@ -1,4 +1,4 @@
-package com.dsvag.yandex.ui.stockDetails
+package com.dsvag.yandex.ui.stock
 
 import android.os.Bundle
 import android.view.View
@@ -9,6 +9,7 @@ import com.dsvag.yandex.databinding.FragmentStockDetailsBinding
 import com.dsvag.yandex.ui.viewBinding
 
 class StockDetailsFragment : Fragment(R.layout.fragment_stock_details) {
+
 
     private val binding by viewBinding(FragmentStockDetailsBinding::bind)
 

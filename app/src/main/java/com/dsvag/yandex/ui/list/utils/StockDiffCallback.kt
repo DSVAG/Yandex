@@ -1,4 +1,4 @@
-package com.dsvag.yandex.ui.stockList.utils
+package com.dsvag.yandex.ui.list.utils
 
 import androidx.recyclerview.widget.DiffUtil
 import com.dsvag.yandex.models.Stock

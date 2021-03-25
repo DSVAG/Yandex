@@ -1,4 +1,4 @@
-package com.dsvag.yandex.models
+package com.dsvag.yandex.models.finnhub
 
 import com.squareup.moshi.Json
 

@@ -30,5 +30,4 @@ data class Stock(
 
     @ColumnInfo(name = "isDefault")
     val isDefault: Boolean = false,
-
-    )
+)

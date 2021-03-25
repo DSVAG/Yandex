@@ -1,4 +1,4 @@
-package com.dsvag.yandex.ui.stockList
+package com.dsvag.yandex.ui.list
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

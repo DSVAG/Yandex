@@ -4,7 +4,8 @@ import android.content.Context
 import androidx.room.Room
 import com.dsvag.yandex.data.local.AppDatabase
 import com.dsvag.yandex.data.remote.FinnhubApi
-import com.dsvag.yandex.data.repositories.StocksRepository
+import com.dsvag.yandex.data.remote.YandexApi
+import com.dsvag.yandex.data.repositories.StockRepository
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
@@ -67,17 +68,27 @@ object AppModule {
     }
 
     @Provides
-    fun provideRetrofit(moshi: Moshi, okHttpClient: OkHttpClient): Retrofit {
+    fun provideFinnhubApi(moshi: Moshi, okHttpClient: OkHttpClient): FinnhubApi {
         return Retrofit.Builder()
             .baseUrl("https://finnhub.io/api/v1/")
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .client(okHttpClient)
             .build()
+            .create(FinnhubApi::class.java)
     }
 
     @Provides
-    fun provideApiFinnhub(retrofit: Retrofit): FinnhubApi {
-        return retrofit.create(FinnhubApi::class.java)
+    fun provideYandexApi(moshi: Moshi): YandexApi {
+        val okHttpClient = OkHttpClient.Builder()
+            .addNetworkInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+            .build()
+
+        return Retrofit.Builder()
+            .baseUrl("https://plus.yandex.ru")
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
+            .client(okHttpClient)
+            .build()
+            .create(YandexApi::class.java)
     }
 
     @Provides
@@ -90,10 +101,11 @@ object AppModule {
     @Provides
     fun provideStockRepository(
         finnhubApi: FinnhubApi,
+        yandexApi: YandexApi,
         appDatabase: AppDatabase,
         okHttpClient: OkHttpClient,
         request: Request,
-    ): StocksRepository {
-        return StocksRepository(finnhubApi, appDatabase.stockDao(), okHttpClient, request)
+    ): StockRepository {
+        return StockRepository(finnhubApi, yandexApi, appDatabase.stockDao(), okHttpClient, request)
     }
 }

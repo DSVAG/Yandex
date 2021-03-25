@@ -1,4 +1,4 @@
-package com.dsvag.yandex.ui.stockList
+package com.dsvag.yandex.ui.list
 
 import android.os.Bundle
 import android.view.View
@@ -8,6 +8,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.dsvag.yandex.R
 import com.dsvag.yandex.databinding.FragmentStockListBinding
+import com.dsvag.yandex.models.Stock
 import com.dsvag.yandex.ui.viewBinding
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.android.material.tabs.TabLayoutMediator.TabConfigurationStrategy
@@ -34,7 +35,6 @@ class StockListFragment : Fragment(R.layout.fragment_stock_list) {
             else -> error("Unknown position")
         }
     }
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         viewPagerAdapter.setAdapters(defaultStockAdapter, favoriteStockAdapter)
@@ -65,8 +65,8 @@ class StockListFragment : Fragment(R.layout.fragment_stock_list) {
         stocksViewModel.subscribe()
     }
 
-    private fun changeFavoriteStatus(ticker: String, isFavorite: Boolean) {
-        stocksViewModel.changeFavoriteStatus(ticker, isFavorite)
+    private fun changeFavoriteStatus(stock: Stock, isFavorite: Boolean) {
+        stocksViewModel.changeFavoriteStatus(stock, isFavorite)
     }
 
 }
