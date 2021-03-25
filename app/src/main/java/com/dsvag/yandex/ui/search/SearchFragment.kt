@@ -8,6 +8,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.dsvag.yandex.R
+import com.dsvag.yandex.base.isNotNull
 import com.dsvag.yandex.base.textChanges
 import com.dsvag.yandex.databinding.FragmentSearchBinding
 import com.dsvag.yandex.models.Stock
@@ -31,7 +32,7 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
         binding.clear.setOnClickListener { binding.search.text?.clear() }
 
         binding.search.textChanges()
-            .filterNot { it.isNullOrEmpty() }
+            .filter { it.isNotNull() }
             .debounce(300)
             .onEach { searchViewModel.search(it.toString()) }
             .launchIn(lifecycleScope)

@@ -30,7 +30,6 @@ class SearchViewModel @Inject constructor(
 
             viewModelScope.launch {
                 val response = stockRepository.search(searchRequest)
-
                 _state.value = State.Success(response)
             }
         }

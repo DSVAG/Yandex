@@ -3,7 +3,6 @@ package com.dsvag.yandex.base
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.EditText
-import androidx.annotation.CheckResult
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.sendBlocking
@@ -12,7 +11,6 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.onStart
 
 @ExperimentalCoroutinesApi
-@CheckResult
 fun EditText.textChanges(): Flow<CharSequence?> = callbackFlow<CharSequence?> {
     val listener = object : TextWatcher {
         override fun afterTextChanged(s: Editable?) {}
@@ -27,3 +25,7 @@ fun EditText.textChanges(): Flow<CharSequence?> = callbackFlow<CharSequence?> {
     awaitClose { removeTextChangedListener(listener) }
 
 }.onStart { emit(text) }
+
+fun Any?.isNull(): Boolean = this == null
+
+fun Any?.isNotNull(): Boolean = this != null

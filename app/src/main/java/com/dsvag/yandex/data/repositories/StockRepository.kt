@@ -1,5 +1,6 @@
 package com.dsvag.yandex.data.repositories
 
+import com.dsvag.yandex.base.isNull
 import com.dsvag.yandex.data.local.StockDao
 import com.dsvag.yandex.data.remote.FinnhubApi
 import com.dsvag.yandex.data.remote.YandexApi
@@ -10,6 +11,7 @@ import com.dsvag.yandex.models.yandex.SearchRequest
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.sendBlocking
@@ -36,6 +38,7 @@ class StockRepository @Inject constructor(
 
     private var webSocket: WebSocket? = null
 
+    @ExperimentalCoroutinesApi
     private suspend fun observeStockChanges(tickers: List<String>): Flow<List<StockData>> {
         return callbackFlow {
             webSocket = okHttpClient.newWebSocket(request, object : WebSocketListener() {
@@ -65,6 +68,7 @@ class StockRepository @Inject constructor(
         }
     }
 
+    @ExperimentalCoroutinesApi
     suspend fun subscribe() {
         defaultTickers.addAll(stockDao.getFavoriteTicker())
 
@@ -110,7 +114,7 @@ class StockRepository @Inject constructor(
     suspend fun addToFavorite(stock: Stock) {
         defaultTickers.add(stock.ticker)
 
-        if (stockDao.getStock(stock.ticker) == null) {
+        if (stockDao.getStock(stock.ticker).isNull()) {
             stockDao.insert(stock.copy(isFavorite = true))
             webSocket?.send(generateMsg("subscribe", stock.ticker))
         } else {
