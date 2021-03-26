@@ -43,7 +43,7 @@
         tools:text="Yandex, LLC" />
 
     <com.google.android.material.checkbox.MaterialCheckBox
-        android:id="@+id/materialCheckBox"
+        android:id="@+id/isFavorite"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:button="@drawable/ic_star"
@@ -59,41 +59,24 @@
         style="@style/Theme.TabLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:paddingVertical="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/company"
-        app:tabMode="scrollable">
+        app:layout_constraintTop_toBottomOf="@+id/company">
 
         <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Chart" />
 
         <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Summary" />
+            android:text="Summary " />
 
         <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="News" />
-
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Forecasts" />
-
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Ideas" />
-
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Events" />
 
     </com.google.android.material.tabs.TabLayout>
 

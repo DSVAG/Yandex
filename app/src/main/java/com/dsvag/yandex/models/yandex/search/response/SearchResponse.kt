@@ -1,4 +1,4 @@
-package com.dsvag.yandex.models.yandex.search
+package com.dsvag.yandex.models.yandex.search.response
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass

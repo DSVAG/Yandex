@@ -48,6 +48,7 @@ object AppModule {
                 .request()
                 .newBuilder()
                 .url(url)
+                .addHeader("X-Finnhub-Token", "c0ru8bf48v6r6pnh9v00")
                 .build()
 
             chain.proceed(request)
@@ -79,12 +80,31 @@ object AppModule {
 
     @Provides
     fun provideYandexApi(moshi: Moshi): YandexApi {
+        val interceptor = Interceptor { chain ->
+            val url = chain
+                .request()
+                .url
+                .newBuilder()
+                .build()
+
+            val request = chain
+                .request()
+                .newBuilder()
+                .url(url)
+                .addHeader("Cookie", "yandexuid=2961259081616698918")
+                .addHeader("x-csrf-token", "1e0a055e1af4e5c061195f9443131bf7b7a25a94:1616771663")
+                .build()
+
+            chain.proceed(request)
+        }
+
         val okHttpClient = OkHttpClient.Builder()
+            .addInterceptor(interceptor)
             .addNetworkInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
             .build()
 
         return Retrofit.Builder()
-            .baseUrl("https://plus.yandex.ru")
+            .baseUrl("https://plus.yandex.ru/invest/")
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .client(okHttpClient)
             .build()

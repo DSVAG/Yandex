@@ -1,10 +1,10 @@
-package com.dsvag.yandex.models.yandex
+package com.dsvag.yandex.models.yandex.search
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class Variables(
+data class SearchVariables(
     @Json(name = "count")
     val count: Int = 25,
 

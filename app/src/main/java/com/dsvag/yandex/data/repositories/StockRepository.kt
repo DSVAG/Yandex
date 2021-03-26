@@ -7,7 +7,9 @@ import com.dsvag.yandex.data.remote.YandexApi
 import com.dsvag.yandex.models.Stock
 import com.dsvag.yandex.models.finnhub.StockData
 import com.dsvag.yandex.models.finnhub.StockDataResponse
-import com.dsvag.yandex.models.yandex.SearchRequest
+import com.dsvag.yandex.models.yandex.search.SearchApiRequest
+import com.dsvag.yandex.models.yandex.stock.StockApiRequest
+import com.dsvag.yandex.models.yandex.stock.response.StockResponse
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import kotlinx.coroutines.CancellationException
@@ -132,7 +134,7 @@ class StockRepository @Inject constructor(
         }
     }
 
-    suspend fun search(searchRequest: SearchRequest): List<Stock> {
+    suspend fun search(searchRequest: SearchApiRequest): List<Stock> {
         val response = yandexApi.search(searchRequest)
 
         return response.info.instruments.catalog.results.map { result ->
@@ -147,8 +149,8 @@ class StockRepository @Inject constructor(
         }
     }
 
-    suspend fun fetchStock(ticker: String) {
-
+    suspend fun fetchStock(stockRequest: StockApiRequest): StockResponse {
+        return yandexApi.fetchStockInfo(stockRequest)
     }
 
     private fun generateMsg(command: String, ticker: String): String {

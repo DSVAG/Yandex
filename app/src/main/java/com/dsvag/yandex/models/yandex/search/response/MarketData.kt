@@ -1,4 +1,4 @@
-package com.dsvag.yandex.models.yandex.search
+package com.dsvag.yandex.models.yandex.search.response
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
@@ -7,13 +7,10 @@ import com.squareup.moshi.JsonClass
 data class MarketData(
     @Json(name = "absoluteChange")
     val absoluteChange: Double,
-
     @Json(name = "currencyCode")
     val currencyCode: String,
-
     @Json(name = "percentChange")
     val percentChange: Double,
-
     @Json(name = "price")
-    val price: Double,
+    val price: Double
 )

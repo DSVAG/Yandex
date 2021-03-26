@@ -8,14 +8,17 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.dsvag.yandex.R
-import com.dsvag.yandex.base.isNotNull
+import com.dsvag.yandex.base.showToast
 import com.dsvag.yandex.base.textChanges
 import com.dsvag.yandex.databinding.FragmentSearchBinding
 import com.dsvag.yandex.models.Stock
 import com.dsvag.yandex.ui.list.StockAdapter
 import com.dsvag.yandex.ui.viewBinding
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
 @AndroidEntryPoint
 class SearchFragment : Fragment(R.layout.fragment_search) {
@@ -32,36 +35,37 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
         binding.clear.setOnClickListener { binding.search.text?.clear() }
 
         binding.search.textChanges()
-            .filter { it.isNotNull() }
             .debounce(300)
             .onEach { searchViewModel.search(it.toString()) }
             .launchIn(lifecycleScope)
 
         lifecycleScope.launchWhenCreated {
-            searchViewModel.state.collect { state ->
-                when (state) {
-                    SearchViewModel.State.Empty -> {
-                        binding.loadingIndicator.isVisible = false
-                        stockAdapter.setData(emptyList())
-                    }
-                    SearchViewModel.State.Loading -> {
-                        binding.loadingIndicator.isVisible = true
-
-                    }
-                    is SearchViewModel.State.Success -> {
-                        binding.loadingIndicator.isVisible = false
-                        stockAdapter.setData(state.stocks)
-                    }
-                    is SearchViewModel.State.Error -> {
-                        binding.loadingIndicator.isVisible = false
-                        stockAdapter.setData(emptyList())
-                    }
-                }
-            }
+            searchViewModel.stateFlow.collect(::stateObserver)
         }
     }
 
     private fun changeFavoriteStatus(stock: Stock, isFavorite: Boolean) {
         searchViewModel.changeFavoriteStatus(stock, isFavorite)
+    }
+
+    private fun stateObserver(state: SearchViewModel.State) {
+        when (state) {
+            SearchViewModel.State.Empty -> {
+                binding.loadingIndicator.isVisible = false
+                stockAdapter.setData(emptyList())
+            }
+            SearchViewModel.State.Loading -> {
+                binding.loadingIndicator.isVisible = true
+            }
+            is SearchViewModel.State.Success -> {
+                binding.loadingIndicator.isVisible = false
+                stockAdapter.setData(state.stocks)
+            }
+            is SearchViewModel.State.Error -> {
+                binding.loadingIndicator.isVisible = false
+                stockAdapter.setData(emptyList())
+                requireContext().showToast(state.msg)
+            }
+        }
     }
 }

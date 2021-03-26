@@ -1,9 +1,9 @@
 package com.dsvag.yandex.ui.list
 
 import android.content.res.ColorStateList
-import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.RecyclerView
@@ -58,8 +58,7 @@ class StockAdapter(
             }
 
             itemBinding.root.setOnClickListener { view ->
-                val bundle = Bundle().apply { putString("ticker", stock.ticker) }
-                view.findNavController().navigate(R.id.stockDetailsFragment, bundle)
+                view.findNavController().navigate(R.id.stockDetailsFragment, bundleOf("ticker" to stock.ticker))
             }
 
             itemBinding.isFavorite.isChecked = stock.isFavorite

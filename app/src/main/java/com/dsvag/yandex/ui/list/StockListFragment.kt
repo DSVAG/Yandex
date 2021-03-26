@@ -4,9 +4,11 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.coroutineScope
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.dsvag.yandex.R
+import com.dsvag.yandex.base.showToast
 import com.dsvag.yandex.databinding.FragmentStockListBinding
 import com.dsvag.yandex.models.Stock
 import com.dsvag.yandex.ui.viewBinding
@@ -22,11 +24,15 @@ class StockListFragment : Fragment(R.layout.fragment_stock_list) {
 
     private val stocksViewModel by viewModels<StocksViewModel>()
 
-    private val viewPagerAdapter by lazy(LazyThreadSafetyMode.NONE) { ViewPagerAdapter() }
-
     private val defaultStockAdapter by lazy(LazyThreadSafetyMode.NONE) { StockAdapter(::changeFavoriteStatus) }
 
     private val favoriteStockAdapter by lazy(LazyThreadSafetyMode.NONE) { StockAdapter(::changeFavoriteStatus) }
+
+    private val viewPagerAdapter by lazy(LazyThreadSafetyMode.NONE) {
+        ViewPagerAdapter().apply {
+            setAdapters(defaultStockAdapter, favoriteStockAdapter)
+        }
+    }
 
     private val tabConfigurationStrategy = TabConfigurationStrategy { tab, position ->
         when (position) {
@@ -37,7 +43,6 @@ class StockListFragment : Fragment(R.layout.fragment_stock_list) {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        viewPagerAdapter.setAdapters(defaultStockAdapter, favoriteStockAdapter)
         binding.viewPager.adapter = viewPagerAdapter
 
         TabLayoutMediator(binding.tabLayout, binding.viewPager, tabConfigurationStrategy).attach()
@@ -57,16 +62,23 @@ class StockListFragment : Fragment(R.layout.fragment_stock_list) {
                 favoriteStockAdapter.setData(stockList)
             }
         }
-    }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        stocksViewModel.subscribe()
+        lifecycle.coroutineScope.launchWhenCreated {
+            stocksViewModel.stateFlow.collect(::stateObserver)
+        }
     }
 
     private fun changeFavoriteStatus(stock: Stock, isFavorite: Boolean) {
         stocksViewModel.changeFavoriteStatus(stock, isFavorite)
+    }
+
+    private fun stateObserver(state: StocksViewModel.State) {
+        when (state) {
+            StocksViewModel.State.Default -> stocksViewModel.subscribe()
+            StocksViewModel.State.Success -> {
+            }
+            is StocksViewModel.State.Error -> requireContext().showToast(state.msg)
+        }
     }
 
 }
