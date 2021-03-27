@@ -26,6 +26,7 @@ class StockDetailsFragment : Fragment(R.layout.fragment_stock_details) {
         binding.back.setOnClickListener { findNavController().popBackStack() }
 
         stockViewModel.stateFlow.onEach(::stateObserver).launchWhenCreated(lifecycleScope)
+
     }
 
     override fun onStart() {
@@ -50,6 +51,5 @@ class StockDetailsFragment : Fragment(R.layout.fragment_stock_details) {
     private fun setData(stockResponse: StockResponse) {
         binding.ticker.text = stockResponse.data.instruments.metaData.ticker
         binding.company.text = stockResponse.data.instruments.metaData.displayName
-
     }
 }

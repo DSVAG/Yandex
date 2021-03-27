@@ -1,0 +1,14 @@
+<resources>
+    <string name="stocks">Акции</string>
+    <string name="favorite">Избранное</string>
+    <string name="find_company_or_ticker">Найдите компанию или тикер</string>
+    <string name="popular_requests">Популярные запросы</string>
+    <string name="chart">Диаграмма</string>
+    <string name="summary">Сводка</string>
+    <string name="news">Новости</string>
+    <string name="period_day">Д</string>
+    <string name="period_week">Н</string>
+    <string name="period_year">Г</string>
+    <string name="period_month">М</string>
+    <string name="period_all">Все время</string>
+</resources>

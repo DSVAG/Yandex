@@ -23,6 +23,7 @@ class MainHolderFactory(
             R.layout.shimmer_stock -> ShimmerStockViewHolder(ShimmerStockBinding.inflate(inflater, viewGroup, false))
             R.layout.item_popular_stocks -> PopularStocksViewHolder(ItemPopularStocksBinding.inflate(inflater,viewGroup,false))
             R.layout.item_ticker -> TickerViewHolder(ItemTickerBinding.inflate(inflater, viewGroup, false), onTickerClick)
+            R.layout.item_news -> NewsViewHolder(ItemNewsBinding.inflate(inflater, viewGroup,false))
             else -> null
         } as BaseViewHolder<*>
     }
