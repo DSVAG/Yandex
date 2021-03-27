@@ -92,7 +92,6 @@ object AppModule {
                 .newBuilder()
                 .url(url)
                 .addHeader("Cookie", "yandexuid=2961259081616698918")
-                .addHeader("x-csrf-token", "1e0a055e1af4e5c061195f9443131bf7b7a25a94:1616771663")
                 .build()
 
             chain.proceed(request)

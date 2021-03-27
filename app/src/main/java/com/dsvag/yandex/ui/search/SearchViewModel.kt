@@ -30,9 +30,7 @@ class SearchViewModel @Inject constructor(
         _stateFlow.value = when (throwable) {
             is IOException -> State.Error("Check network connection")
             is HttpException -> State.Error("Server not response. Try later")
-            else -> {
-                State.Error(throwable.message.toString())
-            }
+            else -> State.Error(throwable.message.toString())
         }
     }
 

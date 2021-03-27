@@ -1,5 +1,6 @@
 package com.dsvag.yandex.ui.list
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dsvag.yandex.data.repositories.StockRepository
@@ -27,6 +28,7 @@ class StocksViewModel @Inject constructor(
     val stateFlow: StateFlow<State> get() = _stateFlow.asStateFlow()
 
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        Log.wtf("StocksViewModel", throwable)
         _stateFlow.value = when (throwable) {
             is IOException -> State.Error("Check network connection")
             is HttpException -> State.Error("Server not response. Try later")

@@ -13,7 +13,6 @@ import com.dsvag.yandex.models.yandex.stock.response.StockResponse
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.sendBlocking
@@ -36,14 +35,16 @@ class StockRepository @Inject constructor(
     val favoriteStockFlow = stockDao.getFavoriteStock()
 
     private val moshi by lazy { Moshi.Builder().add(KotlinJsonAdapterFactory()).build() }
-    private val stockDataJsonAdapter by lazy { moshi.adapter(StockDataResponse::class.java) }
 
     private var webSocket: WebSocket? = null
 
-    @ExperimentalCoroutinesApi
+    private var token = "test"
+
     private suspend fun observeStockChanges(tickers: List<String>): Flow<List<StockData>> {
         return callbackFlow {
             webSocket = okHttpClient.newWebSocket(request, object : WebSocketListener() {
+
+                private val stockDataJsonAdapter by lazy { moshi.adapter(StockDataResponse::class.java) }
 
                 override fun onMessage(webSocket: WebSocket, text: String) {
                     stockDataJsonAdapter.fromJson(text)?.let { stockDataResponse ->
@@ -70,9 +71,10 @@ class StockRepository @Inject constructor(
         }
     }
 
-    @ExperimentalCoroutinesApi
     suspend fun subscribe() {
-        defaultTickers.addAll(stockDao.getFavoriteTicker())
+        token = yandexApi.getToken().token
+
+        defaultTickers.addAll(stockDao.getFavoriteTickers())
 
         defaultTickers.forEach { ticker ->
             val stock = stockDao.getStock(ticker)
@@ -106,13 +108,6 @@ class StockRepository @Inject constructor(
         }
     }
 
-    private fun Stock.updatePrice(newPrice: Double): Stock {
-        val priceChange = this.price - newPrice
-        val priceChangePercent = ((newPrice - this.price) / this.price).absoluteValue
-
-        return this.copy(price = newPrice, priceChange = priceChange, priceChangePercent = priceChangePercent)
-    }
-
     suspend fun addToFavorite(stock: Stock) {
         defaultTickers.add(stock.ticker)
 
@@ -135,7 +130,7 @@ class StockRepository @Inject constructor(
     }
 
     suspend fun search(searchRequest: SearchApiRequest): List<Stock> {
-        val response = yandexApi.search(searchRequest)
+        val response = yandexApi.search(token, searchRequest)
 
         return response.info.instruments.catalog.results.map { result ->
             Stock(
@@ -150,7 +145,14 @@ class StockRepository @Inject constructor(
     }
 
     suspend fun fetchStock(stockRequest: StockApiRequest): StockResponse {
-        return yandexApi.fetchStockInfo(stockRequest)
+        return yandexApi.fetchStockInfo(token, stockRequest)
+    }
+
+    private fun Stock.updatePrice(newPrice: Double): Stock {
+        val priceChange = this.price - newPrice
+        val priceChangePercent = ((newPrice - this.price) / this.price).absoluteValue
+
+        return this.copy(price = newPrice, priceChange = priceChange, priceChangePercent = priceChangePercent)
     }
 
     private fun generateMsg(command: String, ticker: String): String {
@@ -159,8 +161,8 @@ class StockRepository @Inject constructor(
 
     companion object {
         private val defaultTickers = mutableSetOf(
-            "YNDX", "MSFT", "AMZN", "FB", "AAPL", "JPM", "NFLX", "JNJ", "TSLA", "XOM", "IBM", "BAC", "WFC",
-            "INTC", "T", "V", "CVX", "UNH", "PFE", "HD", "PG", "VZ", "NVDA", "WMT",
+            "YNDX", "MSFT", "AMZN", "FB", "AAPL", "JPM", "NFLX", "JNJ", "TSLA", "XOM", "IBM", "BAC", "WFC", "INTC", "T",
+            "V", "CVX", "UNH", "PFE", "HD", "PG", "VZ", "NVDA", "WMT",
         )
     }
 }
