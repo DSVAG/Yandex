@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.textview.MaterialTextView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp"
+    android:background="@drawable/bg_stock"
+    android:backgroundTint="@color/light_pink"
+    android:paddingHorizontal="16dp"
+    android:paddingVertical="8dp"
+    android:textAppearance="@style/TextAppearance.App.Subtitle"
+    tools:text="Apple" />

@@ -5,13 +5,11 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.widget.EditText
 import android.widget.Toast
+import androidx.lifecycle.LifecycleCoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.sendBlocking
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.*
 
 @ExperimentalCoroutinesApi
 fun EditText.textChanges(): Flow<CharSequence?> = callbackFlow<CharSequence?> {
@@ -35,4 +33,22 @@ fun Any?.isNotNull(): Boolean = this != null
 
 fun Context.showToast(text: String, duration: Int = Toast.LENGTH_SHORT) {
     Toast.makeText(this, text, duration).show()
+}
+
+fun <T> Flow<T>.launchWhenCreated(lifecycleScope: LifecycleCoroutineScope) {
+    lifecycleScope.launchWhenCreated {
+        this@launchWhenCreated.collect()
+    }
+}
+
+fun <T> Flow<T>.launchWhenStarted(lifecycleScope: LifecycleCoroutineScope) {
+    lifecycleScope.launchWhenStarted {
+        this@launchWhenStarted.collect()
+    }
+}
+
+fun <T> Flow<T>.launchWhenResumed(lifecycleScope: LifecycleCoroutineScope) {
+    lifecycleScope.launchWhenResumed {
+        this@launchWhenResumed.collect()
+    }
 }

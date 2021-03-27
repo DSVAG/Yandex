@@ -43,10 +43,10 @@ class StocksViewModel @Inject constructor(
         }
     }
 
-    fun changeFavoriteStatus(stock: Stock, isFavorite: Boolean) {
+    fun changeFavoriteStatus(stock: Stock) {
         viewModelScope.launch(exceptionHandler) {
             _stateFlow.value = State.Success
-            if (isFavorite) {
+            if (stock.isFavorite) {
                 stockRepository.addToFavorite(stock)
             } else {
                 stockRepository.removeFromFavorite(stock)

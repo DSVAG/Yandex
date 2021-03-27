@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.facebook.shimmer.ShimmerFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_stock">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/logo"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:background="@drawable/bg_stock"
+            android:backgroundTint="@color/grey"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/ticker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:background="@color/grey"
+            android:text="YNDX"
+            android:textAppearance="@style/TextAppearance.App.Headline2"
+            android:textColor="@color/grey"
+            app:layout_constraintBottom_toTopOf="@+id/company"
+            app:layout_constraintStart_toEndOf="@+id/logo"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/company"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:background="@color/grey"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="Yandex, LLC"
+            android:textAppearance="@style/TextAppearance.App.Subtitle"
+            android:textColor="@color/grey"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/ticker"
+            app:layout_constraintTop_toBottomOf="@+id/ticker" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/grey"
+            android:text="$200.00"
+            android:textAppearance="@style/TextAppearance.App.Headline2"
+            android:textColor="@color/grey"
+            app:layout_constraintBottom_toTopOf="@+id/declined"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/declined"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/grey"
+            android:text="+$0.12 (1,15%)"
+            android:textAppearance="@style/TextAppearance.App.Subtitle"
+            android:textColor="@color/grey"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/price" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.facebook.shimmer.ShimmerFrameLayout>

@@ -1,10 +1,12 @@
 package com.dsvag.yandex.data.repositories
 
+import android.util.Log
 import com.dsvag.yandex.base.isNull
 import com.dsvag.yandex.data.local.StockDao
 import com.dsvag.yandex.data.remote.FinnhubApi
 import com.dsvag.yandex.data.remote.YandexApi
 import com.dsvag.yandex.models.Stock
+import com.dsvag.yandex.models.finnhub.SocketMsg
 import com.dsvag.yandex.models.finnhub.StockData
 import com.dsvag.yandex.models.finnhub.StockDataResponse
 import com.dsvag.yandex.models.yandex.search.SearchApiRequest
@@ -38,8 +40,6 @@ class StockRepository @Inject constructor(
 
     private var webSocket: WebSocket? = null
 
-    private var token = "test"
-
     private suspend fun observeStockChanges(tickers: List<String>): Flow<List<StockData>> {
         return callbackFlow {
             webSocket = okHttpClient.newWebSocket(request, object : WebSocketListener() {
@@ -64,7 +64,7 @@ class StockRepository @Inject constructor(
             })
 
             tickers.forEach { ticker ->
-                webSocket?.send(generateMsg("subscribe", ticker))
+                webSocket?.send(generateMsg(SocketMsg("subscribe", ticker)))
             }
 
             awaitClose { webSocket?.close(1000, null) }
@@ -112,8 +112,8 @@ class StockRepository @Inject constructor(
         defaultTickers.add(stock.ticker)
 
         if (stockDao.getStock(stock.ticker).isNull()) {
-            stockDao.insert(stock.copy(isFavorite = true))
-            webSocket?.send(generateMsg("subscribe", stock.ticker))
+            stockDao.insert(stock)
+            webSocket?.send(generateMsg(SocketMsg("subscribe", stock.ticker)))
         } else {
             stockDao.update(stock.copy(isFavorite = true))
         }
@@ -121,9 +121,9 @@ class StockRepository @Inject constructor(
 
     suspend fun removeFromFavorite(stock: Stock) {
         if (stock.isDefault) {
-            stockDao.update(stock.copy(isFavorite = false))
+            stockDao.update(stock)
         } else {
-            webSocket?.send(generateMsg("unsubscribe", stock.ticker))
+            webSocket?.send(generateMsg(SocketMsg("unsubscribe", stock.ticker)))
             defaultTickers.remove(stock.ticker)
             stockDao.delete(stock)
         }
@@ -155,14 +155,19 @@ class StockRepository @Inject constructor(
         return this.copy(price = newPrice, priceChange = priceChange, priceChangePercent = priceChangePercent)
     }
 
-    private fun generateMsg(command: String, ticker: String): String {
-        return "{\"type\":\"$command\",\"symbol\":\"$ticker\"}"
+
+    private fun generateMsg(msg: SocketMsg): String {
+        val msg = moshi.adapter(SocketMsg::class.java).toJson(msg)
+        Log.d("kek", msg)
+        return msg
     }
 
-    companion object {
-        private val defaultTickers = mutableSetOf(
+    private companion object {
+        val defaultTickers = mutableSetOf(
             "YNDX", "MSFT", "AMZN", "FB", "AAPL", "JPM", "NFLX", "JNJ", "TSLA", "XOM", "IBM", "BAC", "WFC", "INTC", "T",
             "V", "CVX", "UNH", "PFE", "HD", "PG", "VZ", "NVDA", "WMT",
         )
+
+        var token = "token"
     }
 }

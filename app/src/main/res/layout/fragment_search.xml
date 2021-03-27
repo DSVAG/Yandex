@@ -72,22 +72,13 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <com.google.android.material.progressindicator.LinearProgressIndicator
-        android:id="@+id/loadingIndicator"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:elevation="16dp"
-        app:indicatorColor="@color/red"
-        app:layout_anchor="@id/appBarLayout"
-        app:layout_anchorGravity="bottom" />
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/searchStockList"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:clipToPadding="false"
         android:overScrollMode="never"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

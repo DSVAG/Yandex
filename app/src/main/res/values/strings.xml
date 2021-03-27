@@ -5,4 +5,5 @@
     <string name="stocks">Stocks</string>
     <string name="favorite">Favorite</string>
     <string name="find_company_or_ticker">Find company or ticker</string>
+    <string name="popular_requests">Popular requests</string>
 </resources>

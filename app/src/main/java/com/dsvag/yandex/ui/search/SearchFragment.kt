@@ -2,20 +2,25 @@ package com.dsvag.yandex.ui.search
 
 import android.os.Bundle
 import android.view.View
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.dsvag.yandex.R
+import com.dsvag.yandex.base.launchWhenCreated
+import com.dsvag.yandex.base.recyclerview.Adapter
+import com.dsvag.yandex.base.recyclerview.ViewTyped
 import com.dsvag.yandex.base.showToast
 import com.dsvag.yandex.base.textChanges
 import com.dsvag.yandex.databinding.FragmentSearchBinding
 import com.dsvag.yandex.models.Stock
-import com.dsvag.yandex.ui.list.StockAdapter
+import com.dsvag.yandex.ui.MainHolderFactory
+import com.dsvag.yandex.ui.holders.PopularStocksUI
+import com.dsvag.yandex.ui.holders.ShimmerStockUI
+import com.dsvag.yandex.ui.holders.StockUI
+import com.dsvag.yandex.ui.holders.TickerUI
 import com.dsvag.yandex.ui.viewBinding
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -27,7 +32,13 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
 
     private val searchViewModel by viewModels<SearchViewModel>()
 
-    private val stockAdapter by lazy { StockAdapter(::changeFavoriteStatus) }
+    private val stockAdapter by lazy(LazyThreadSafetyMode.NONE) {
+        Adapter<ViewTyped>(MainHolderFactory(onStockClick = ::changeFavoriteStatus))
+    }
+
+    private val popularStockAdapter by lazy(LazyThreadSafetyMode.NONE) {
+        Adapter<ViewTyped>(MainHolderFactory(onTickerClick = ::onTickerClick)).apply { items = popularTicker }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.searchStockList.adapter = stockAdapter
@@ -39,33 +50,45 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
             .onEach { searchViewModel.search(it.toString()) }
             .launchIn(lifecycleScope)
 
-        lifecycleScope.launchWhenCreated {
-            searchViewModel.stateFlow.collect(::stateObserver)
-        }
+        searchViewModel.stateFlow.onEach(::stateObserver).launchWhenCreated(lifecycleScope)
     }
 
-    private fun changeFavoriteStatus(stock: Stock, isFavorite: Boolean) {
-        searchViewModel.changeFavoriteStatus(stock, isFavorite)
+    private fun changeFavoriteStatus(stock: Stock) {
+        searchViewModel.changeFavoriteStatus(stock)
+    }
+
+    private fun onTickerClick(ticker: String) {
+        binding.search.setText(ticker)
     }
 
     private fun stateObserver(state: SearchViewModel.State) {
         when (state) {
             SearchViewModel.State.Empty -> {
-                binding.loadingIndicator.isVisible = false
-                stockAdapter.setData(emptyList())
+                stockAdapter.items = listOf(PopularStocksUI(popularStockAdapter))
             }
             SearchViewModel.State.Loading -> {
-                binding.loadingIndicator.isVisible = true
+                stockAdapter.items = shimmersList
             }
             is SearchViewModel.State.Success -> {
-                binding.loadingIndicator.isVisible = false
-                stockAdapter.setData(state.stocks)
+                stockAdapter.items = state.stocks.map { StockUI(it) }
             }
             is SearchViewModel.State.Error -> {
-                binding.loadingIndicator.isVisible = false
-                stockAdapter.setData(emptyList())
+                stockAdapter.items = emptyList()
                 requireContext().showToast(state.msg)
             }
         }
+    }
+
+    private companion object {
+        val shimmersList = listOf(
+            ShimmerStockUI(uId = "0"), ShimmerStockUI(uId = "1"), ShimmerStockUI(uId = "2"),
+            ShimmerStockUI(uId = "3"), ShimmerStockUI(uId = "4")
+        )
+
+        val popularTicker = listOf(
+            TickerUI("Apple"), TickerUI("Amazon"), TickerUI("Google"), TickerUI("Tesla"),
+            TickerUI("Facebook"), TickerUI("Mastercard"), TickerUI("Alibaba"), TickerUI("GM"),
+            TickerUI("Microsoft"), TickerUI("Visa"), TickerUI("Intel"),
+        )
     }
 }
