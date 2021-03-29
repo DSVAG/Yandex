@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dsvag.yandex.data.repositories.StockRepository
 import com.dsvag.yandex.models.Stock
-import com.dsvag.yandex.models.yandex.search.SearchApiRequest
+import com.dsvag.yandex.models.yandex.search.SearchRequest
 import com.dsvag.yandex.models.yandex.search.SearchVariables
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -40,7 +40,7 @@ class SearchViewModel @Inject constructor(
         } else {
             _stateFlow.value = State.Loading
             val variables = SearchVariables(searchText = query)
-            val searchRequest = SearchApiRequest(variables = variables)
+            val searchRequest = SearchRequest(variables = variables)
 
             viewModelScope.launch(exceptionHandler) {
                 val response = stockRepository.search(searchRequest)

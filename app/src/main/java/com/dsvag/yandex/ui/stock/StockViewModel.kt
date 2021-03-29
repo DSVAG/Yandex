@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dsvag.yandex.data.repositories.StockRepository
-import com.dsvag.yandex.models.yandex.stock.StockApiRequest
+import com.dsvag.yandex.models.yandex.stock.StockRequest
 import com.dsvag.yandex.models.yandex.stock.StockVariables
 import com.dsvag.yandex.models.yandex.stock.response.StockResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -38,10 +38,9 @@ class StockViewModel @Inject constructor(
         _stateFlow.value = State.Loading
 
         val variables = StockVariables(slug = ticker)
-        val apiRequest = StockApiRequest(variables = variables)
+        val apiRequest = StockRequest(variables = variables)
 
         viewModelScope.launch(exceptionHandler) {
-
             _stateFlow.value = State.Success(stockRepository.fetchStock(apiRequest))
         }
     }

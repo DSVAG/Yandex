@@ -49,8 +49,6 @@
         android:id="@+id/stockDetailsFragment"
         android:name="com.dsvag.yandex.ui.stock.StockDetailsFragment"
         android:label="fragment_stock_details"
-        tools:layout="@layout/fragment_stock_details">
-
-    </fragment>
+        tools:layout="@layout/fragment_stock_details" />
 
 </navigation>

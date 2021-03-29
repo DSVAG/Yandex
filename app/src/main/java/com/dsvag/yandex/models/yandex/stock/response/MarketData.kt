@@ -8,16 +8,8 @@ import com.squareup.moshi.JsonClass
 data class MarketData(
     @Json(name = "absoluteChange")
     val absoluteChange: Double,
-
-    @Json(name = "currencyCode")
-    val currencyCode: String,
-
-    @Json(name = "id")
-    val id: String,
-
     @Json(name = "percentChange")
     val percentChange: Double,
-
     @Json(name = "price")
     val price: Double
 )

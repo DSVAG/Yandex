@@ -7,7 +7,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.dsvag.yandex.R
-import com.dsvag.yandex.base.launchWhenCreated
 import com.dsvag.yandex.base.recyclerview.Adapter
 import com.dsvag.yandex.base.recyclerview.ViewTyped
 import com.dsvag.yandex.base.showToast
@@ -21,6 +20,7 @@ import com.dsvag.yandex.ui.holders.StockUI
 import com.dsvag.yandex.ui.holders.TickerUI
 import com.dsvag.yandex.ui.viewBinding
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -50,7 +50,9 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
             .onEach { searchViewModel.search(it.toString()) }
             .launchIn(lifecycleScope)
 
-        searchViewModel.stateFlow.onEach(::stateObserver).launchWhenCreated(lifecycleScope)
+        lifecycleScope.launchWhenCreated {
+            searchViewModel.stateFlow.collect(::stateObserver)
+        }
     }
 
     private fun changeFavoriteStatus(stock: Stock) {

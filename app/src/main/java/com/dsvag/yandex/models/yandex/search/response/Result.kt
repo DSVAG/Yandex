@@ -6,6 +6,9 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class Result(
+    @Json(name = "id")
+    val id: Long,
+
     @Json(name = "displayName")
     val displayName: String,
 

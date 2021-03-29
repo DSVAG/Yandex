@@ -6,8 +6,6 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class MetaData(
-    @Json(name = "componentOf")
-    val componentOf: List<ComponentOf> = emptyList(),
     @Json(name = "displayName")
     val displayName: String,
     @Json(name = "id")

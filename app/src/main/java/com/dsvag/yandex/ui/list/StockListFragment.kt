@@ -7,8 +7,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.dsvag.yandex.R
-import com.dsvag.yandex.base.launchWhenCreated
-import com.dsvag.yandex.base.launchWhenStarted
 import com.dsvag.yandex.base.recyclerview.Adapter
 import com.dsvag.yandex.base.recyclerview.ViewTyped
 import com.dsvag.yandex.base.showToast
@@ -21,7 +19,7 @@ import com.dsvag.yandex.ui.viewBinding
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.android.material.tabs.TabLayoutMediator.TabConfigurationStrategy
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.collect
 
 @AndroidEntryPoint
 class StockListFragment : Fragment(R.layout.fragment_stock_list) {
@@ -62,15 +60,21 @@ class StockListFragment : Fragment(R.layout.fragment_stock_list) {
             findNavController().navigate(R.id.action_stockListFragment_to_searchFragment)
         }
 
-        stocksViewModel.defaultStockFlow.onEach { stockList ->
-            defaultStockAdapter.items = stockList.map { StockUI(it) }
-        }.launchWhenStarted(lifecycleScope)
+        lifecycleScope.launchWhenStarted {
+            stocksViewModel.defaultStockFlow.collect { stockList ->
+                defaultStockAdapter.items = stockList.map { StockUI(it) }
+            }
+        }
 
-        stocksViewModel.favoriteStockFlow.onEach { stockList ->
-            favoriteStockAdapter.items = stockList.map { StockUI(it) }
-        }.launchWhenStarted(lifecycleScope)
+        lifecycleScope.launchWhenStarted {
+            stocksViewModel.favoriteStockFlow.collect { stockList ->
+                favoriteStockAdapter.items = stockList.map { StockUI(it) }
+            }
+        }
 
-        stocksViewModel.stateFlow.onEach(::stateObserver).launchWhenCreated(lifecycleScope)
+        lifecycleScope.launchWhenCreated {
+            stocksViewModel.stateFlow.collect(::stateObserver)
+        }
     }
 
     private fun changeFavoriteStatus(stock: Stock) {

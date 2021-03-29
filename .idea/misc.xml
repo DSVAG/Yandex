@@ -13,6 +13,7 @@
         <entry key="app/src/main/res/layout/fragment_stock_details.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_stock_graphs.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_stock_list.xml" value="0.21481481481481482" />
+        <entry key="app/src/main/res/layout/item_chart.xml" value="0.3148148148148148" />
         <entry key="app/src/main/res/layout/item_list_stock.xml" value="0.21481481481481482" />
         <entry key="app/src/main/res/layout/item_news.xml" value="0.22962962962962963" />
         <entry key="app/src/main/res/layout/item_news_list.xml" value="0.22962962962962963" />

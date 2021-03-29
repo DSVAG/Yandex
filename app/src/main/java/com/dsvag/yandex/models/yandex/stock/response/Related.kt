@@ -7,11 +7,9 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 data class Related(
     @Json(name = "cursor")
-    val cursor: Int?,
-
+    val cursor: String?,
     @Json(name = "hasMore")
     val hasMore: Boolean,
-
     @Json(name = "items")
-    val newsList: List<ItemNews>
+    val items: List<Item>
 )

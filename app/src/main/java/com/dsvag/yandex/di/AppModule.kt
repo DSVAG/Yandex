@@ -3,7 +3,6 @@ package com.dsvag.yandex.di
 import android.content.Context
 import androidx.room.Room
 import com.dsvag.yandex.data.local.AppDatabase
-import com.dsvag.yandex.data.remote.FinnhubApi
 import com.dsvag.yandex.data.remote.YandexApi
 import com.dsvag.yandex.data.repositories.StockRepository
 import com.squareup.moshi.Moshi
@@ -48,7 +47,6 @@ object AppModule {
                 .request()
                 .newBuilder()
                 .url(url)
-                .addHeader("X-Finnhub-Token", "c0ru8bf48v6r6pnh9v00")
                 .build()
 
             chain.proceed(request)
@@ -66,16 +64,6 @@ object AppModule {
     @Provides
     fun provideMoshi(): Moshi {
         return Moshi.Builder().addLast(KotlinJsonAdapterFactory()).build()
-    }
-
-    @Provides
-    fun provideFinnhubApi(moshi: Moshi, okHttpClient: OkHttpClient): FinnhubApi {
-        return Retrofit.Builder()
-            .baseUrl("https://finnhub.io/api/v1/")
-            .addConverterFactory(MoshiConverterFactory.create(moshi))
-            .client(okHttpClient)
-            .build()
-            .create(FinnhubApi::class.java)
     }
 
     @Provides
@@ -119,12 +107,11 @@ object AppModule {
 
     @Provides
     fun provideStockRepository(
-        finnhubApi: FinnhubApi,
         yandexApi: YandexApi,
         appDatabase: AppDatabase,
         okHttpClient: OkHttpClient,
         request: Request,
     ): StockRepository {
-        return StockRepository(finnhubApi, yandexApi, appDatabase.stockDao(), okHttpClient, request)
+        return StockRepository(yandexApi, appDatabase.stockDao(), okHttpClient, request)
     }
 }

@@ -1,17 +1,17 @@
 package com.dsvag.yandex.data.repositories
 
-import android.util.Log
-import com.dsvag.yandex.base.isNull
 import com.dsvag.yandex.data.local.StockDao
-import com.dsvag.yandex.data.remote.FinnhubApi
 import com.dsvag.yandex.data.remote.YandexApi
 import com.dsvag.yandex.models.Stock
 import com.dsvag.yandex.models.finnhub.SocketMsg
 import com.dsvag.yandex.models.finnhub.StockData
 import com.dsvag.yandex.models.finnhub.StockDataResponse
-import com.dsvag.yandex.models.yandex.search.SearchApiRequest
-import com.dsvag.yandex.models.yandex.stock.StockApiRequest
+import com.dsvag.yandex.models.yandex.search.SearchRequest
+import com.dsvag.yandex.models.yandex.stock.StockRequest
+import com.dsvag.yandex.models.yandex.stock.StockVariables
 import com.dsvag.yandex.models.yandex.stock.response.StockResponse
+import com.dsvag.yandex.models.yandex.stockPrice.StockPriceRequest
+import com.dsvag.yandex.models.yandex.stockPrice.StockPriceVariables
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import kotlinx.coroutines.CancellationException
@@ -26,7 +26,6 @@ import javax.inject.Inject
 import kotlin.math.absoluteValue
 
 class StockRepository @Inject constructor(
-    private val finnhubApi: FinnhubApi,
     private val yandexApi: YandexApi,
     private val stockDao: StockDao,
     private val okHttpClient: OkHttpClient,
@@ -78,24 +77,35 @@ class StockRepository @Inject constructor(
 
         defaultTickers.forEach { ticker ->
             val stock = stockDao.getStock(ticker)
-            val stockPrice = finnhubApi.fetchCurrentPrice(ticker)
 
             if (stock == null) {
-                val stockInfo = finnhubApi.fetchStockInfo(ticker)
+                val variables = StockVariables(slug = ticker)
+                val apiRequest = StockRequest(variables = variables)
+                val stockInfo = yandexApi.fetchStockInfo(token, apiRequest).data.instruments.metaData
 
                 stockDao.insert(
                     Stock(
-                        stockInfo.company,
-                        stockInfo.ticker,
-                        stockInfo.ticker,
-                        stockPrice.c,
-                        0.0,
-                        0.0,
+                        stockInfo.displayName,
+                        stockInfo.logoId,
+                        ticker,
+                        stockInfo.marketData.price,
+                        stockInfo.marketData.absoluteChange,
+                        stockInfo.marketData.percentChange,
                         isDefault = true,
                     )
                 )
             } else {
-                stockDao.update(stock.updatePrice(stockPrice.c))
+                val variables = StockPriceVariables(slug = ticker)
+                val apiRequest = StockPriceRequest(stockPriceVariables = variables)
+                val stockPrice = yandexApi.fetchStockPrice(token, apiRequest)
+
+                stockDao.update(
+                    stock.copy(
+                        price = stockPrice.data.instruments.metaData.marketData.price,
+                        priceChange = stockPrice.data.instruments.metaData.marketData.absoluteChange,
+                        priceChangePercent = stockPrice.data.instruments.metaData.marketData.percentChange,
+                    )
+                )
             }
         }
 
@@ -111,7 +121,7 @@ class StockRepository @Inject constructor(
     suspend fun addToFavorite(stock: Stock) {
         defaultTickers.add(stock.ticker)
 
-        if (stockDao.getStock(stock.ticker).isNull()) {
+        if (stockDao.getStock(stock.ticker) == null) {
             stockDao.insert(stock)
             webSocket?.send(generateMsg(SocketMsg("subscribe", stock.ticker)))
         } else {
@@ -129,7 +139,7 @@ class StockRepository @Inject constructor(
         }
     }
 
-    suspend fun search(searchRequest: SearchApiRequest): List<Stock> {
+    suspend fun search(searchRequest: SearchRequest): List<Stock> {
         val response = yandexApi.search(token, searchRequest)
 
         return response.info.instruments.catalog.results.map { result ->
@@ -144,7 +154,7 @@ class StockRepository @Inject constructor(
         }
     }
 
-    suspend fun fetchStock(stockRequest: StockApiRequest): StockResponse {
+    suspend fun fetchStock(stockRequest: StockRequest): StockResponse {
         return yandexApi.fetchStockInfo(token, stockRequest)
     }
 
@@ -157,9 +167,7 @@ class StockRepository @Inject constructor(
 
 
     private fun generateMsg(msg: SocketMsg): String {
-        val msg = moshi.adapter(SocketMsg::class.java).toJson(msg)
-        Log.d("kek", msg)
-        return msg
+        return moshi.adapter(SocketMsg::class.java).toJson(msg)
     }
 
     private companion object {
