@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false">Yandex</string>
+    <string name="app_name">Yandex.Invest</string>
     <string name="stocks">Stocks</string>
     <string name="favorite">Favorite</string>
     <string name="find_company_or_ticker">Find company or ticker</string>
@@ -12,4 +12,7 @@
     <string name="period_half_year">6M</string>
     <string name="period_year">1Y</string>
     <string name="period_all">All</string>
+    <string name="error_network">Check your network connection</string>
+    <string name="error_server">The server not respond. Try later</string>
+    <string name="error_unknown">Unknown error</string>
 </resources>

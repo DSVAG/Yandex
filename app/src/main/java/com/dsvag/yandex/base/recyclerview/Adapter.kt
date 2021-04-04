@@ -4,10 +4,10 @@ import androidx.recyclerview.widget.AsyncListDiffer
 
 class Adapter<T : ViewTyped>(holderFactory: HolderFactory) : BaseAdapter<T>(holderFactory) {
 
-    private val stockListDiffer = AsyncListDiffer(this, ViewTypedItemCallback())
+    private val stockListDiffer = AsyncListDiffer<T>(this, ViewTypedItemCallback())
 
     override var items: List<T>
-        get() = stockListDiffer.currentList as List<T>
+        get() = stockListDiffer.currentList
         set(value) {
             stockListDiffer.submitList(value)
         }

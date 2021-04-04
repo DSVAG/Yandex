@@ -10,7 +10,7 @@ data class ChartRequest(
     @Json(name = "operationName")
     val operationName: Operation = Operation.Chart,
     @Json(name = "query")
-    val query: String = "query Chart(\$count: Int!, \$to: IsoDateTime, \$instrumentId: ID!, \$candleSize: CandleSize!, \$excludeTs: Boolean!, \$exchange: Exchange) {\n  candles(exchange: \$exchange, instrumentId: \$instrumentId) {\n    earliestTs @skip(if: \$excludeTs)\n    seriesBefore(to: \$to, count: \$count, candleSize: \$candleSize)\n  }\n}\n",
+    val query: String = "query Chart(\$count:Int!,\$to:IsoDateTime,\$instrumentId:ID!,\$candleSize:CandleSize!,\$excludeTs:Boolean!,\$exchange:Exchange){candles(exchange:\$exchange,instrumentId:\$instrumentId){earliestTs @skip(if:\$excludeTs)seriesBefore(to:\$to,count:\$count,candleSize:\$candleSize)}}",
     @Json(name = "variables")
     val variables: ChartVariables
 )

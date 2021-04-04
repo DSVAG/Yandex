@@ -10,7 +10,7 @@ data class SearchRequest(
     val operationName: Operation = Operation.ContentForAll,
 
     @Json(name = "query")
-    val query: String = "query ContentForAll(\$searchText: String, \$sort: InstrumentListSort, \$ascending: Boolean, \$count: Int!, \$cursor: String) {\n  instruments {\n    list(query: \$searchText, sort: \$sort, ascending: \$ascending, count: \$count, cursor: \$cursor) {\n      cursor\n      results {\n        ... on AnyInstrumentItem {\n          id\n          slug\n          type\n          ticker\n          displayName\n          logoId\n          taxFree\n          commissionFree\n          marketData {\n            id\n            accruedInterest\n            price\n            priceStep\n            lotSize\n            currencyCode\n            percentChange: yearlyPercentChange\n            absoluteChange: yearlyAbsoluteChange\n            dailyPercentChange: percentChange\n            dailyAbsoluteChange: absoluteChange\n            bondYield {\n              annualYield\n              allTimeYield\n              }\n            }\n        }\n      }\n    }\n  }\n}\n",
+    val query: String = "query ContentForAll(\$searchText:String,\$sort:InstrumentListSort,\$ascending:Boolean,\$count:Int!,\$cursor:String){instruments{list(query:\$searchText,sort:\$sort,ascending:\$ascending,count:\$count,cursor:\$cursor){cursor results{... on AnyInstrumentItem{id slug type ticker displayName logoId taxFree commissionFree marketData{id accruedInterest price priceStep lotSize currencyCode percentChange:yearlyPercentChange absoluteChange:yearlyAbsoluteChange dailyPercentChange:percentChange dailyAbsoluteChange:absoluteChange bondYield{annualYield allTimeYield}}}}}}}",
 
     @Json(name = "variables")
     val variables: SearchVariables

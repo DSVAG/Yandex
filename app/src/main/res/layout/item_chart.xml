@@ -10,6 +10,7 @@
         android:id="@+id/price"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="32dp"
         android:textAppearance="@style/TextAppearance.App.Headline1"
         app:layout_constraintBottom_toTopOf="@+id/declined"
         app:layout_constraintEnd_toEndOf="parent"
@@ -23,7 +24,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="@style/TextAppearance.App.Headline3"
-        app:layout_constraintBottom_toTopOf="@+id/chart"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/price"
@@ -45,12 +45,12 @@
         android:id="@+id/chart"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginVertical="32dp"
         android:padding="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintBottom_toTopOf="@+id/month"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/declined" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/day"
@@ -66,8 +66,7 @@
         app:backgroundTint="@color/grey_light"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/week"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/chart" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/week"
@@ -83,8 +82,7 @@
         app:backgroundTint="@color/grey_light"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/month"
-        app:layout_constraintStart_toEndOf="@id/day"
-        app:layout_constraintTop_toBottomOf="@+id/chart" />
+        app:layout_constraintStart_toEndOf="@id/day" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/month"
@@ -100,8 +98,7 @@
         app:backgroundTint="@color/grey_light"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/halfYear"
-        app:layout_constraintStart_toEndOf="@id/week"
-        app:layout_constraintTop_toBottomOf="@+id/chart" />
+        app:layout_constraintStart_toEndOf="@id/week" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/halfYear"
@@ -117,8 +114,7 @@
         app:backgroundTint="@color/grey_light"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/year"
-        app:layout_constraintStart_toEndOf="@id/month"
-        app:layout_constraintTop_toBottomOf="@+id/chart" />
+        app:layout_constraintStart_toEndOf="@id/month" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/year"
@@ -134,8 +130,7 @@
         app:backgroundTint="@color/grey_light"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/all"
-        app:layout_constraintStart_toEndOf="@id/halfYear"
-        app:layout_constraintTop_toBottomOf="@+id/chart" />
+        app:layout_constraintStart_toEndOf="@id/halfYear" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/all"
@@ -151,7 +146,6 @@
         app:backgroundTint="@color/grey_light"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/year"
-        app:layout_constraintTop_toBottomOf="@+id/chart" />
+        app:layout_constraintStart_toEndOf="@id/year" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

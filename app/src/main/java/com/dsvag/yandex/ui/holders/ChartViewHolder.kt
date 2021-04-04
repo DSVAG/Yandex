@@ -1,6 +1,8 @@
 package com.dsvag.yandex.ui.holders
 
 import android.graphics.Color
+import coil.clear
+import coil.load
 import com.dsvag.yandex.R
 import com.dsvag.yandex.base.recyclerview.BaseViewHolder
 import com.dsvag.yandex.base.recyclerview.ViewTyped
@@ -10,15 +12,15 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 
-data class ChartsUI(
-    val candles: List<Candles>,
+data class ChartUI(
+    val candles: Pair<Candles, Candles>,
     override val viewType: Int = R.layout.item_chart,
-    override val uId: String = candles.toString()
+    override val uId: String = candles.toString(),
 ) : ViewTyped
 
 class ChartViewHolder(
     private val itemBinding: ItemChartBinding,
-) : BaseViewHolder<ChartsUI>(itemBinding.root) {
+) : BaseViewHolder<ChartUI>(itemBinding.root) {
 
     private val context = itemBinding.root.context
 
@@ -29,33 +31,91 @@ class ChartViewHolder(
             xAxis.isEnabled = false
             legend.isEnabled = false
             description.isEnabled = false
+            isDragEnabled = true
+
             setTouchEnabled(true)
-            isDragEnabled = false
-            setScaleEnabled(false)
-            setPinchZoom(false)
-            setDrawMarkers(true)
+            setScaleEnabled(true)
+            setPinchZoom(true)
+            setDrawMarkers(false)
             setViewPortOffsets(0F, 0F, 0F, 0F)
         }
     }
 
-    override fun bind(item: ChartsUI) {
-        val data = item.candles.first().seriesBefore.map { Entry(it[0].toFloat(), it[1].toFloat()) }
+    override fun bind(item: ChartUI) {
+        var data = item.candles.first.seriesBefore.takeLast(30).map { Entry(it.first.toFloat(), it.second.toFloat()) }
+        setData(data)
 
-        val dataSet = LineDataSet(data, "Unused label").apply {
+        itemBinding.day.setOnClickListener {
+            data = item.candles.first.seriesBefore.takeLast(30).map { Entry(it.first.toFloat(), it.second.toFloat()) }
+            setData(data)
+        }
+
+        itemBinding.week.setOnClickListener {
+            data = item.candles.first.seriesBefore.map { Entry(it.first.toFloat(), it.second.toFloat()) }
+            setData(data)
+        }
+
+        itemBinding.month.setOnClickListener {
+            data = item.candles.second.seriesBefore.takeLast(40).map { Entry(it.first.toFloat(), it.second.toFloat()) }
+            setData(data)
+        }
+
+        itemBinding.halfYear.setOnClickListener {
+            data = item.candles.second.seriesBefore.takeLast(200).map { Entry(it.first.toFloat(), it.second.toFloat()) }
+            setData(data)
+        }
+
+        itemBinding.year.setOnClickListener {
+            data = item.candles.second.seriesBefore.takeLast(400).map { Entry(it.first.toFloat(), it.second.toFloat()) }
+            setData(data)
+        }
+
+        itemBinding.all.setOnClickListener {
+            data = item.candles.second.seriesBefore.map { Entry(it.first.toFloat(), it.second.toFloat()) }
+            setData(data)
+        }
+
+    }
+
+    private fun setData(data: List<Entry>) {
+        val first = data.first().y
+        val last = data.last().y
+
+        val priceChange = last - first
+        val priceChangePercent = (last - first) / first
+
+        itemBinding.price.text = String.format("%.2f", last)
+        itemBinding.declined.text = String.format("$%.2f (%.3f)", priceChange, priceChangePercent)
+
+        when {
+            priceChange > 0 -> {
+                itemBinding.declined.setTextColor(context.getColor(R.color.green))
+                itemBinding.trending.load(R.drawable.ic_trending_up)
+            }
+            priceChange < 0 -> {
+                itemBinding.declined.setTextColor(context.getColor(R.color.red))
+                itemBinding.trending.load(R.drawable.ic_trending_down)
+            }
+            else -> {
+                itemBinding.declined.setTextColor(context.getColor(R.color.grey))
+                itemBinding.trending.clear()
+            }
+        }
+
+        val dataSet = LineDataSet(data, null).apply {
             color = Color.BLACK
-            setDrawValues(true)
             lineWidth = 2f
             isHighlightEnabled = true
+            fillDrawable = context.getDrawable(R.drawable.bg_chart)
+            mode = LineDataSet.Mode.LINEAR
             setDrawCircles(false)
             setDrawFilled(true)
-            fillDrawable = context.getDrawable(R.drawable.bg_chart)
             setDrawHighlightIndicators(false)
-            mode = LineDataSet.Mode.CUBIC_BEZIER
-            cubicIntensity = 0.1f
+            setDrawValues(false)
         }
 
         itemBinding.chart.data = LineData(dataSet)
         itemBinding.chart.invalidate()
+        itemBinding.chart.zoomToCenter(0.001F, 0.001F)
     }
-
 }

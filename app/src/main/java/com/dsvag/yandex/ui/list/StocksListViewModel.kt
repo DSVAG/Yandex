@@ -3,6 +3,7 @@ package com.dsvag.yandex.ui.list
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dsvag.yandex.base.ErrorType
 import com.dsvag.yandex.data.repositories.StockRepository
 import com.dsvag.yandex.models.Stock
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,7 +17,7 @@ import retrofit2.HttpException
 import javax.inject.Inject
 
 @HiltViewModel
-class StocksViewModel @Inject constructor(
+class StocksListViewModel @Inject constructor(
     private val stockRepository: StockRepository,
 ) : ViewModel() {
 
@@ -30,22 +31,20 @@ class StocksViewModel @Inject constructor(
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
         Log.wtf("StocksViewModel", throwable)
         _stateFlow.value = when (throwable) {
-            is IOException -> State.Error("Check network connection")
-            is HttpException -> State.Error("Server not response. Try later")
-            else -> State.Error(throwable.message.toString())
+            is IOException -> State.Error(ErrorType.Network)
+            is HttpException -> State.Error(ErrorType.Server)
+            else -> State.Error(ErrorType.Other)
         }
     }
 
     fun subscribe() {
         viewModelScope.launch(exceptionHandler) {
-            _stateFlow.value = State.Success
             stockRepository.subscribe()
         }
     }
 
     fun changeFavoriteStatus(stock: Stock) {
         viewModelScope.launch(exceptionHandler) {
-            _stateFlow.value = State.Success
             if (stock.isFavorite) {
                 stockRepository.addToFavorite(stock)
             } else {
@@ -56,7 +55,6 @@ class StocksViewModel @Inject constructor(
 
     sealed class State {
         object Default : State()
-        object Success : State()
-        data class Error(val msg: String) : State()
+        data class Error(val errorType: ErrorType) : State()
     }
 }

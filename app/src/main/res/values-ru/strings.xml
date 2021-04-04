@@ -11,4 +11,8 @@
     <string name="period_half_year">6М</string>
     <string name="period_year">1Г</string>
     <string name="period_all">Все время</string>
+    <string name="app_name">Я.Инвестиции</string>
+    <string name="error_network">Проверьте сетевое соединение</string>
+    <string name="error_server">Сервер не отвечает. Попробуй позже</string>
+    <string name="error_unknown">Неизвестная ошибка</string>
 </resources>

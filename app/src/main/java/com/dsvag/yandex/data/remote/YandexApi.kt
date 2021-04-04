@@ -20,25 +20,29 @@ interface YandexApi {
 
     @POST("graphql")
     suspend fun search(
-        @Header("x-csrf-token") token: String,
-        @Body body: SearchRequest
+        @Header(X_CSRF_TOKEN) token: String,
+        @Body body: SearchRequest,
     ): SearchResponse
 
     @POST("graphql")
     suspend fun fetchStockInfo(
-        @Header("x-csrf-token") token: String,
-        @Body body: StockRequest
+        @Header(X_CSRF_TOKEN) token: String,
+        @Body body: StockRequest,
     ): StockResponse
 
     @POST("graphql")
     suspend fun fetchStockPrice(
-        @Header("x-csrf-token") token: String,
-        @Body body: StockPriceRequest
+        @Header(X_CSRF_TOKEN) token: String,
+        @Body body: StockPriceRequest,
     ): StockInfoResponce
 
     @POST("graphql")
     suspend fun fetchStockChart(
-        @Header("x-csrf-token") token: String,
-        @Body body: ChartRequest
+        @Header(X_CSRF_TOKEN) token: String,
+        @Body body: ChartRequest,
     ): ChartResponse
+
+    private companion object {
+        const val X_CSRF_TOKEN = "x-csrf-token"
+    }
 }

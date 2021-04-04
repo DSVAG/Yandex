@@ -7,6 +7,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.dsvag.yandex.R
+import com.dsvag.yandex.base.ErrorType
 import com.dsvag.yandex.base.recyclerview.Adapter
 import com.dsvag.yandex.base.recyclerview.ViewTyped
 import com.dsvag.yandex.base.showToast
@@ -14,7 +15,7 @@ import com.dsvag.yandex.databinding.FragmentStockDetailsBinding
 import com.dsvag.yandex.models.yandex.chart.response.Candles
 import com.dsvag.yandex.models.yandex.stock.response.StockResponse
 import com.dsvag.yandex.ui.MainHolderFactory
-import com.dsvag.yandex.ui.holders.ChartsUI
+import com.dsvag.yandex.ui.holders.ChartUI
 import com.dsvag.yandex.ui.holders.NewsListUI
 import com.dsvag.yandex.ui.holders.NewsUI
 import com.dsvag.yandex.ui.viewBinding
@@ -62,23 +63,29 @@ class StockDetailsFragment : Fragment(R.layout.fragment_stock_details) {
     private fun stateObserver(state: StockViewModel.State) {
         when (state) {
             StockViewModel.State.Loading -> binding.shimmer.showShimmer(true)
-            is StockViewModel.State.Success -> {
-                binding.shimmer.hideShimmer()
-                setData(state.stockResponse, state.charts)
-            }
-            is StockViewModel.State.Error -> {
-                binding.shimmer.hideShimmer()
-                requireContext().showToast(state.msg)
-                findNavController().popBackStack()
-            }
+            is StockViewModel.State.Success -> setData(state.stockResponse, state.charts)
+            is StockViewModel.State.Error -> throwError(state.errorType)
         }
     }
 
-    private fun setData(stockResponse: StockResponse, charts: List<Candles>) {
+    private fun setData(stockResponse: StockResponse, charts: Pair<Candles, Candles>) {
+        binding.shimmer.hideShimmer()
         binding.ticker.text = stockResponse.data.instruments.metaData.ticker
         binding.company.text = stockResponse.data.instruments.metaData.displayName
 
-        viewPagerAdapter.items = listOf(ChartsUI(charts), NewsListUI(newsAdapter))
+        viewPagerAdapter.items = listOf(ChartUI(charts), NewsListUI(newsAdapter))
         newsAdapter.items = stockResponse.data.news.related.items.map { NewsUI(it) }
+    }
+
+    private fun throwError(errorType: ErrorType) {
+        val msg = when (errorType) {
+            ErrorType.Network -> requireContext().getString(R.string.error_network)
+            ErrorType.Server -> requireContext().getString(R.string.error_server)
+            else -> requireContext().getString(R.string.error_unknown)
+        }
+
+        binding.shimmer.hideShimmer()
+        requireContext().showToast(msg)
+        findNavController().popBackStack()
     }
 }

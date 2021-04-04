@@ -3,6 +3,7 @@ package com.dsvag.yandex.ui.search
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dsvag.yandex.base.ErrorType
 import com.dsvag.yandex.data.repositories.StockRepository
 import com.dsvag.yandex.models.Stock
 import com.dsvag.yandex.models.yandex.search.SearchRequest
@@ -28,9 +29,9 @@ class SearchViewModel @Inject constructor(
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
         Log.wtf("SearchViewModel", throwable)
         _stateFlow.value = when (throwable) {
-            is IOException -> State.Error("Check network connection")
-            is HttpException -> State.Error("Server not response. Try later")
-            else -> State.Error(throwable.message.toString())
+            is IOException -> State.Error(ErrorType.Network)
+            is HttpException -> State.Error(ErrorType.Server)
+            else -> State.Error(ErrorType.Other)
         }
     }
 
@@ -69,6 +70,6 @@ class SearchViewModel @Inject constructor(
         object Loading : State()
 
         data class Success(val stocks: List<Stock>) : State()
-        data class Error(val msg: String) : State()
+        data class Error(val errorType: ErrorType) : State()
     }
 }

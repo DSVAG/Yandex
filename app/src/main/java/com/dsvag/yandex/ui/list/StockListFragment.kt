@@ -7,6 +7,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.dsvag.yandex.R
+import com.dsvag.yandex.base.ErrorType
 import com.dsvag.yandex.base.recyclerview.Adapter
 import com.dsvag.yandex.base.recyclerview.ViewTyped
 import com.dsvag.yandex.base.showToast
@@ -26,7 +27,7 @@ class StockListFragment : Fragment(R.layout.fragment_stock_list) {
 
     private val binding by viewBinding(FragmentStockListBinding::bind)
 
-    private val stocksViewModel by viewModels<StocksViewModel>()
+    private val stocksViewModel by viewModels<StocksListViewModel>()
 
     private val defaultStockAdapter by lazy(LazyThreadSafetyMode.NONE) {
         Adapter<ViewTyped>(MainHolderFactory(onStockClick = ::changeFavoriteStatus))
@@ -81,13 +82,20 @@ class StockListFragment : Fragment(R.layout.fragment_stock_list) {
         stocksViewModel.changeFavoriteStatus(stock)
     }
 
-    private fun stateObserver(state: StocksViewModel.State) {
+    private fun stateObserver(state: StocksListViewModel.State) {
         when (state) {
-            StocksViewModel.State.Default -> stocksViewModel.subscribe()
-            StocksViewModel.State.Success -> {
-            }
-            is StocksViewModel.State.Error -> requireContext().showToast(state.msg)
+            StocksListViewModel.State.Default -> stocksViewModel.subscribe()
+            is StocksListViewModel.State.Error -> throwError(state.errorType)
         }
     }
 
+    private fun throwError(errorType: ErrorType) {
+        val msg = when (errorType) {
+            ErrorType.Network -> requireContext().getString(R.string.error_network)
+            ErrorType.Server -> requireContext().getString(R.string.error_server)
+            else -> requireContext().getString(R.string.error_unknown)
+        }
+        requireContext().showToast(msg)
+        findNavController().popBackStack()
+    }
 }

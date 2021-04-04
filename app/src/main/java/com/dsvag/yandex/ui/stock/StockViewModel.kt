@@ -3,6 +3,7 @@ package com.dsvag.yandex.ui.stock
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dsvag.yandex.base.ErrorType
 import com.dsvag.yandex.data.repositories.StockRepository
 import com.dsvag.yandex.models.yandex.chart.CandleSize
 import com.dsvag.yandex.models.yandex.chart.ChartRequest
@@ -32,9 +33,9 @@ class StockViewModel @Inject constructor(
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
         Log.wtf("StockViewModel", throwable)
         _stateFlow.value = when (throwable) {
-            is IOException -> State.Error("Check network connection")
-            is HttpException -> State.Error("Server not response. Try later")
-            else -> State.Error(throwable.message.toString())
+            is IOException -> State.Error(ErrorType.Network)
+            is HttpException -> State.Error(ErrorType.Server)
+            else -> State.Error(ErrorType.Other)
         }
     }
 
@@ -52,20 +53,20 @@ class StockViewModel @Inject constructor(
         }
     }
 
-    private suspend fun fetchCharts(id: Long, exchange: String): List<Candles> {
-        val charts = listOf(
-            ChartVariables(CandleSize.FIVE_MINUTE, instrumentId = id, count = 290, exchange = exchange),
-            ChartVariables(CandleSize.ONE_HOUR, instrumentId = id, count = 40, exchange = exchange),
-            ChartVariables(CandleSize.ONE_DAY, instrumentId = id, count = 10000, exchange = exchange),
-        )
+    private suspend fun fetchCharts(id: Long, exchange: String): Pair<Candles, Candles> {
+        val hoursVariables = ChartVariables(CandleSize.ONE_HOUR, instrumentId = id, count = 200, exchange = exchange)
+        val daysVariables = ChartVariables(CandleSize.ONE_DAY, instrumentId = id, count = 10000, exchange = exchange)
 
-        return charts.map { stockRepository.fetchStockChart(ChartRequest(variables = it)).data.candles }
+        return Pair(
+            stockRepository.fetchStockChart(ChartRequest(variables = hoursVariables)).data.candles,
+            stockRepository.fetchStockChart(ChartRequest(variables = daysVariables)).data.candles,
+        )
     }
 
     sealed class State {
         object Loading : State()
 
-        data class Success(val stockResponse: StockResponse, val charts: List<Candles>) : State()
-        data class Error(val msg: String) : State()
+        data class Success(val stockResponse: StockResponse, val charts: Pair<Candles, Candles>) : State()
+        data class Error(val errorType: ErrorType) : State()
     }
 }

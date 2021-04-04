@@ -21,9 +21,6 @@ interface StockDao {
     @Query("SELECT * FROM Stocks WHERE ticker = :ticker")
     suspend fun getStock(ticker: String): Stock?
 
-    @Query("SELECT ticker FROM stocks WHERE isFavorite = 1")
-    suspend fun getFavoriteTickers(): List<String>
-
     @Query("SELECT ticker FROM stocks")
     suspend fun getTickers(): List<String>
 

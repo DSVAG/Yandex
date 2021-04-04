@@ -7,6 +7,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.dsvag.yandex.R
+import com.dsvag.yandex.base.ErrorType
 import com.dsvag.yandex.base.recyclerview.Adapter
 import com.dsvag.yandex.base.recyclerview.ViewTyped
 import com.dsvag.yandex.base.showToast
@@ -74,11 +75,21 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
             is SearchViewModel.State.Success -> {
                 stockAdapter.items = state.stocks.map { StockUI(it) }
             }
-            is SearchViewModel.State.Error -> {
-                stockAdapter.items = emptyList()
-                requireContext().showToast(state.msg)
-            }
+            is SearchViewModel.State.Error -> throwError(state.errorType)
+
         }
+    }
+
+    private fun throwError(errorType: ErrorType) {
+        val msg = when (errorType) {
+            ErrorType.Network -> requireContext().getString(R.string.error_network)
+            ErrorType.Server -> requireContext().getString(R.string.error_server)
+            else -> requireContext().getString(R.string.error_unknown)
+        }
+        stockAdapter.items = emptyList()
+
+        requireContext().showToast(msg)
+        findNavController().popBackStack()
     }
 
     private companion object {

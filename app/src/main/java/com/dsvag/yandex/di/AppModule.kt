@@ -4,8 +4,9 @@ import android.content.Context
 import androidx.room.Room
 import com.dsvag.yandex.data.local.AppDatabase
 import com.dsvag.yandex.data.remote.YandexApi
+import com.dsvag.yandex.data.repositories.StockChangesObserver
 import com.dsvag.yandex.data.repositories.StockRepository
-import com.squareup.moshi.Moshi
+import com.squareup.moshi.*
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
 import dagger.Provides
@@ -25,8 +26,7 @@ object AppModule {
 
     @Provides
     fun provideRequest(): Request {
-        return Request
-            .Builder()
+        return Request.Builder()
             .url("wss://ws.finnhub.io")
             .addHeader("X-Finnhub-Token", "c0ru8bf48v6r6pnh9v00")
             .build()
@@ -61,9 +61,32 @@ object AppModule {
             .build()
     }
 
+    @OptIn(ExperimentalStdlibApi::class)
     @Provides
     fun provideMoshi(): Moshi {
-        return Moshi.Builder().addLast(KotlinJsonAdapterFactory()).build()
+        return Moshi.Builder()
+            .addLast(KotlinJsonAdapterFactory())
+            .addAdapter(object : JsonAdapter<Pair<Long, Double>>() {
+                override fun fromJson(reader: JsonReader): Pair<Long, Double> {
+                    reader.beginArray()
+                    val long = reader.nextLong()
+                    val double = reader.nextDouble()
+                    reader.endArray()
+                    return Pair(long, double)
+                }
+
+                override fun toJson(writer: JsonWriter, value: Pair<Long, Double>?) {
+                    if (value == null) {
+                        writer.nullValue()
+                    } else {
+                        writer.beginArray()
+                        writer.value(value.first)
+                        writer.value(value.second)
+                        writer.endArray()
+                    }
+                }
+            })
+            .build()
     }
 
     @Provides
@@ -100,18 +123,30 @@ object AppModule {
 
     @Provides
     fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase {
-        return Room
-            .databaseBuilder(context, AppDatabase::class.java, "Stock.db")
-            .build()
+        return Room.databaseBuilder(context, AppDatabase::class.java, "Stock.db").build()
     }
 
     @Provides
     fun provideStockRepository(
         yandexApi: YandexApi,
         appDatabase: AppDatabase,
+        stockChangesObserver: StockChangesObserver,
+    ): StockRepository {
+        return StockRepository(yandexApi, appDatabase.stockDao(), stockChangesObserver)
+    }
+
+    @OptIn(ExperimentalStdlibApi::class)
+    @Provides
+    fun provideStockChangesObserver(
         okHttpClient: OkHttpClient,
         request: Request,
-    ): StockRepository {
-        return StockRepository(yandexApi, appDatabase.stockDao(), okHttpClient, request)
+        moshi: Moshi
+    ): StockChangesObserver {
+        return StockChangesObserver(
+            okHttpClient,
+            request,
+            stockDataResponseJsonAdapter = moshi.adapter(),
+            socketMsgJsonAdapter = moshi.adapter(),
+        )
     }
 }
