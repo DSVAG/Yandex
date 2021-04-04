@@ -14,14 +14,6 @@ abstract class BaseAdapter<T : ViewTyped>(internal val holderFactory: HolderFact
 
     override fun onBindViewHolder(holder: BaseViewHolder<ViewTyped>, position: Int) = holder.bind(items[position])
 
-    override fun onBindViewHolder(holder: BaseViewHolder<ViewTyped>, position: Int, payloads: MutableList<Any>) {
-        if (payloads.isNotEmpty()) {
-            holder.bind(items[position], payloads)
-        } else {
-            onBindViewHolder(holder, position)
-        }
-    }
-
     override fun getItemCount(): Int = items.size
 
 }

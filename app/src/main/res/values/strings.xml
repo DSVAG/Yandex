@@ -9,6 +9,7 @@
     <string name="period_day">D</string>
     <string name="period_week">W</string>
     <string name="period_month">M</string>
-    <string name="period_year">Y</string>
+    <string name="period_half_year">6M</string>
+    <string name="period_year">1Y</string>
     <string name="period_all">All</string>
 </resources>

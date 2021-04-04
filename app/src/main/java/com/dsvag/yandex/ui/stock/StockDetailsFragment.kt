@@ -11,8 +11,10 @@ import com.dsvag.yandex.base.recyclerview.Adapter
 import com.dsvag.yandex.base.recyclerview.ViewTyped
 import com.dsvag.yandex.base.showToast
 import com.dsvag.yandex.databinding.FragmentStockDetailsBinding
+import com.dsvag.yandex.models.yandex.chart.response.Candles
 import com.dsvag.yandex.models.yandex.stock.response.StockResponse
 import com.dsvag.yandex.ui.MainHolderFactory
+import com.dsvag.yandex.ui.holders.ChartsUI
 import com.dsvag.yandex.ui.holders.NewsListUI
 import com.dsvag.yandex.ui.holders.NewsUI
 import com.dsvag.yandex.ui.viewBinding
@@ -29,15 +31,12 @@ class StockDetailsFragment : Fragment(R.layout.fragment_stock_details) {
 
     private val newsAdapter by lazy(LazyThreadSafetyMode.NONE) { Adapter<ViewTyped>(MainHolderFactory()) }
 
-    private val viewPagerAdapter by lazy(LazyThreadSafetyMode.NONE) {
-        Adapter<ViewTyped>(MainHolderFactory()).apply {
-            items = listOf(NewsListUI(newsAdapter))
-        }
-    }
+    private val viewPagerAdapter by lazy(LazyThreadSafetyMode.NONE) { Adapter<ViewTyped>(MainHolderFactory()) }
 
     private val tabConfigurationStrategy = TabLayoutMediator.TabConfigurationStrategy { tab, position ->
         when (position) {
-            0 -> tab.text = requireContext().getString(R.string.news)
+            0 -> tab.text = requireContext().getString(R.string.chart)
+            1 -> tab.text = requireContext().getString(R.string.news)
             else -> error("Unknown position")
         }
     }
@@ -65,7 +64,7 @@ class StockDetailsFragment : Fragment(R.layout.fragment_stock_details) {
             StockViewModel.State.Loading -> binding.shimmer.showShimmer(true)
             is StockViewModel.State.Success -> {
                 binding.shimmer.hideShimmer()
-                setData(state.stockResponse)
+                setData(state.stockResponse, state.charts)
             }
             is StockViewModel.State.Error -> {
                 binding.shimmer.hideShimmer()
@@ -75,10 +74,11 @@ class StockDetailsFragment : Fragment(R.layout.fragment_stock_details) {
         }
     }
 
-    private fun setData(stockResponse: StockResponse) {
+    private fun setData(stockResponse: StockResponse, charts: List<Candles>) {
         binding.ticker.text = stockResponse.data.instruments.metaData.ticker
         binding.company.text = stockResponse.data.instruments.metaData.displayName
 
+        viewPagerAdapter.items = listOf(ChartsUI(charts), NewsListUI(newsAdapter))
         newsAdapter.items = stockResponse.data.news.related.items.map { NewsUI(it) }
     }
 }

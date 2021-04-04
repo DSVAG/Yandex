@@ -13,7 +13,7 @@ data class Result(
     val displayName: String,
 
     @Json(name = "logoId")
-    val logoId: String,
+    val logoId: String?,
 
     @Json(name = "marketData")
     val marketData: MarketData,

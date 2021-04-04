@@ -7,9 +7,9 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 data class MarketData(
     @Json(name = "absoluteChange")
-    val absoluteChange: Double,
+    val absoluteChange: Double?,
     @Json(name = "percentChange")
-    val percentChange: Double,
+    val percentChange: Double?,
     @Json(name = "price")
-    val price: Double
+    val price: Double,
 )

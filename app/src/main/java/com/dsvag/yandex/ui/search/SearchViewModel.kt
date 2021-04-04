@@ -44,7 +44,12 @@ class SearchViewModel @Inject constructor(
 
             viewModelScope.launch(exceptionHandler) {
                 val response = stockRepository.search(searchRequest)
-                _stateFlow.value = State.Success(response)
+
+                if (response.isEmpty()) {
+                    _stateFlow.value = State.Empty
+                } else {
+                    _stateFlow.value = State.Success(response)
+                }
             }
         }
     }

@@ -6,10 +6,12 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class MetaData(
+    @Json(name = "exchange")
+    val exchange: String,
     @Json(name = "displayName")
     val displayName: String,
     @Json(name = "id")
-    val id: String,
+    val id: Long,
     @Json(name = "logoId")
     val logoId: String,
     @Json(name = "marketData")

@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="8dp">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.App.Headline1"
+        app:layout_constraintBottom_toTopOf="@+id/declined"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
+        tools:text="$200.00" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/declined"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.App.Headline3"
+        app:layout_constraintBottom_toTopOf="@+id/chart"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/price"
+        tools:text="+$0.12 (1,15%)"
+        tools:textColor="@color/green" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/trending"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/declined"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toStartOf="@+id/declined"
+        app:layout_constraintTop_toTopOf="@+id/declined"
+        tools:srcCompat="@drawable/ic_trending_up" />
+
+    <com.github.mikephil.charting.charts.LineChart
+        android:id="@+id/chart"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:padding="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/day"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="0dp"
+        android:minHeight="0dp"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="8dp"
+        android:text="@string/period_day"
+        android:textAppearance="@style/TextAppearance.App.Subtitle"
+        app:background="@drawable/bg_stock"
+        app:backgroundTint="@color/grey_light"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/week"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/chart" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/week"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="0dp"
+        android:minHeight="0dp"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="8dp"
+        android:text="@string/period_week"
+        android:textAppearance="@style/TextAppearance.App.Subtitle"
+        app:background="@drawable/bg_stock"
+        app:backgroundTint="@color/grey_light"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/month"
+        app:layout_constraintStart_toEndOf="@id/day"
+        app:layout_constraintTop_toBottomOf="@+id/chart" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/month"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="0dp"
+        android:minHeight="0dp"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="8dp"
+        android:text="@string/period_month"
+        android:textAppearance="@style/TextAppearance.App.Subtitle"
+        app:background="@drawable/bg_stock"
+        app:backgroundTint="@color/grey_light"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/halfYear"
+        app:layout_constraintStart_toEndOf="@id/week"
+        app:layout_constraintTop_toBottomOf="@+id/chart" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/halfYear"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="0dp"
+        android:minHeight="0dp"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="8dp"
+        android:text="@string/period_half_year"
+        android:textAppearance="@style/TextAppearance.App.Subtitle"
+        app:background="@drawable/bg_stock"
+        app:backgroundTint="@color/grey_light"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/year"
+        app:layout_constraintStart_toEndOf="@id/month"
+        app:layout_constraintTop_toBottomOf="@+id/chart" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/year"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="0dp"
+        android:minHeight="0dp"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="8dp"
+        android:text="@string/period_year"
+        android:textAppearance="@style/TextAppearance.App.Subtitle"
+        app:background="@drawable/bg_stock"
+        app:backgroundTint="@color/grey_light"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/all"
+        app:layout_constraintStart_toEndOf="@id/halfYear"
+        app:layout_constraintTop_toBottomOf="@+id/chart" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/all"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="0dp"
+        android:minHeight="0dp"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="8dp"
+        android:text="@string/period_all"
+        android:textAppearance="@style/TextAppearance.App.Subtitle"
+        app:background="@drawable/bg_stock"
+        app:backgroundTint="@color/grey_light"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/year"
+        app:layout_constraintTop_toBottomOf="@+id/chart" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

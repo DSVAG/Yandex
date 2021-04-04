@@ -6,6 +6,8 @@ import com.dsvag.yandex.models.Stock
 import com.dsvag.yandex.models.finnhub.SocketMsg
 import com.dsvag.yandex.models.finnhub.StockData
 import com.dsvag.yandex.models.finnhub.StockDataResponse
+import com.dsvag.yandex.models.yandex.chart.ChartRequest
+import com.dsvag.yandex.models.yandex.chart.response.ChartResponse
 import com.dsvag.yandex.models.yandex.search.SearchRequest
 import com.dsvag.yandex.models.yandex.stock.StockRequest
 import com.dsvag.yandex.models.yandex.stock.StockVariables
@@ -85,6 +87,7 @@ class StockRepository @Inject constructor(
 
                 stockDao.insert(
                     Stock(
+                        stockInfo.id,
                         stockInfo.displayName,
                         stockInfo.logoId,
                         ticker,
@@ -144,12 +147,13 @@ class StockRepository @Inject constructor(
 
         return response.info.instruments.catalog.results.map { result ->
             Stock(
+                id = result.id,
                 company = result.displayName,
                 logo = result.logoId,
                 ticker = result.ticker,
                 price = result.marketData.price,
-                priceChange = result.marketData.absoluteChange,
-                priceChangePercent = result.marketData.percentChange
+                priceChange = result.marketData.absoluteChange ?: 0.0,
+                priceChangePercent = result.marketData.percentChange ?: 0.0,
             )
         }
     }
@@ -158,13 +162,16 @@ class StockRepository @Inject constructor(
         return yandexApi.fetchStockInfo(token, stockRequest)
     }
 
+    suspend fun fetchStockChart(chartRequest: ChartRequest): ChartResponse {
+        return yandexApi.fetchStockChart(token, chartRequest)
+    }
+
     private fun Stock.updatePrice(newPrice: Double): Stock {
         val priceChange = this.price - newPrice
         val priceChangePercent = ((newPrice - this.price) / this.price).absoluteValue
 
         return this.copy(price = newPrice, priceChange = priceChange, priceChangePercent = priceChangePercent)
     }
-
 
     private fun generateMsg(msg: SocketMsg): String {
         return moshi.adapter(SocketMsg::class.java).toJson(msg)

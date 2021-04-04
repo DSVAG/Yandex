@@ -6,11 +6,14 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "Stocks")
 data class Stock(
+    @ColumnInfo(name = "id")
+    val id: Long,
+
     @ColumnInfo(name = "company")
     val company: String,
 
     @ColumnInfo(name = "logo")
-    val logo: String,
+    val logo: String?,
 
     @PrimaryKey
     @ColumnInfo(name = "ticker")

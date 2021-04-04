@@ -7,7 +7,8 @@
     <string name="news">Новости</string>
     <string name="period_day">Д</string>
     <string name="period_week">Н</string>
-    <string name="period_year">Г</string>
     <string name="period_month">М</string>
+    <string name="period_half_year">6М</string>
+    <string name="period_year">1Г</string>
     <string name="period_all">Все время</string>
 </resources>

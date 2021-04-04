@@ -1,6 +1,8 @@
 package com.dsvag.yandex.data.remote
 
 import com.dsvag.yandex.models.yandex.Token
+import com.dsvag.yandex.models.yandex.chart.ChartRequest
+import com.dsvag.yandex.models.yandex.chart.response.ChartResponse
 import com.dsvag.yandex.models.yandex.search.SearchRequest
 import com.dsvag.yandex.models.yandex.search.response.SearchResponse
 import com.dsvag.yandex.models.yandex.stock.StockRequest
@@ -33,4 +35,10 @@ interface YandexApi {
         @Header("x-csrf-token") token: String,
         @Body body: StockPriceRequest
     ): StockInfoResponce
+
+    @POST("graphql")
+    suspend fun fetchStockChart(
+        @Header("x-csrf-token") token: String,
+        @Body body: ChartRequest
+    ): ChartResponse
 }

@@ -4,6 +4,10 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dsvag.yandex.data.repositories.StockRepository
+import com.dsvag.yandex.models.yandex.chart.CandleSize
+import com.dsvag.yandex.models.yandex.chart.ChartRequest
+import com.dsvag.yandex.models.yandex.chart.ChartVariables
+import com.dsvag.yandex.models.yandex.chart.response.Candles
 import com.dsvag.yandex.models.yandex.stock.StockRequest
 import com.dsvag.yandex.models.yandex.stock.StockVariables
 import com.dsvag.yandex.models.yandex.stock.response.StockResponse
@@ -41,14 +45,27 @@ class StockViewModel @Inject constructor(
         val apiRequest = StockRequest(variables = variables)
 
         viewModelScope.launch(exceptionHandler) {
-            _stateFlow.value = State.Success(stockRepository.fetchStock(apiRequest))
+            val response = stockRepository.fetchStock(apiRequest)
+            val charts = fetchCharts(response.data.instruments.metaData.id, response.data.instruments.metaData.exchange)
+
+            _stateFlow.value = State.Success(response, charts)
         }
+    }
+
+    private suspend fun fetchCharts(id: Long, exchange: String): List<Candles> {
+        val charts = listOf(
+            ChartVariables(CandleSize.FIVE_MINUTE, instrumentId = id, count = 290, exchange = exchange),
+            ChartVariables(CandleSize.ONE_HOUR, instrumentId = id, count = 40, exchange = exchange),
+            ChartVariables(CandleSize.ONE_DAY, instrumentId = id, count = 10000, exchange = exchange),
+        )
+
+        return charts.map { stockRepository.fetchStockChart(ChartRequest(variables = it)).data.candles }
     }
 
     sealed class State {
         object Loading : State()
 
-        data class Success(val stockResponse: StockResponse) : State()
+        data class Success(val stockResponse: StockResponse, val charts: List<Candles>) : State()
         data class Error(val msg: String) : State()
     }
 }

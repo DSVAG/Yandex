@@ -4,5 +4,5 @@ enum class Operation {
     Instrument,     // StockInfo
     InstrumentHot,  // StockPrice
     ContentForAll,  // Search
-    Chart,          //
+    Chart,          // Chart
 }
