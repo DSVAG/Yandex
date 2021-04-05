@@ -19,6 +19,7 @@ import okhttp3.Request
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
+import java.math.BigDecimal
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -66,16 +67,16 @@ object AppModule {
     fun provideMoshi(): Moshi {
         return Moshi.Builder()
             .addLast(KotlinJsonAdapterFactory())
-            .addAdapter(object : JsonAdapter<Pair<Long, Double>>() {
-                override fun fromJson(reader: JsonReader): Pair<Long, Double> {
+            .addAdapter(object : JsonAdapter<Pair<Long, BigDecimal>>() {
+                override fun fromJson(reader: JsonReader): Pair<Long, BigDecimal> {
                     reader.beginArray()
                     val long = reader.nextLong()
-                    val double = reader.nextDouble()
+                    val price = reader.nextDouble()
                     reader.endArray()
-                    return Pair(long, double)
+                    return Pair(long, BigDecimal(price))
                 }
 
-                override fun toJson(writer: JsonWriter, value: Pair<Long, Double>?) {
+                override fun toJson(writer: JsonWriter, value: Pair<Long, BigDecimal>?) {
                     if (value == null) {
                         writer.nullValue()
                     } else {

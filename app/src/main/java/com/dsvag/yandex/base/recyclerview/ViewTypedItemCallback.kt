@@ -8,4 +8,6 @@ class ViewTypedItemCallback<T : ViewTyped> : DiffUtil.ItemCallback<T>() {
 
     @SuppressLint("DiffUtilEquals")
     override fun areContentsTheSame(oldItem: T, newItem: T): Boolean = oldItem == newItem
+
+    override fun getChangePayload(oldItem: T, newItem: T) = oldItem
 }

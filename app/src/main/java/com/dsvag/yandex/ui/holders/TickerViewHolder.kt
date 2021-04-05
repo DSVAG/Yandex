@@ -16,7 +16,7 @@ class TickerViewHolder(
     private val onTickerClick: (String) -> Unit,
 ) : BaseViewHolder<TickerUI>(itemBinding.root) {
 
-    override fun bind(item: TickerUI) {
+    override fun bind(item: TickerUI, oldItem: TickerUI?) {
         itemBinding.root.text = item.ticker
         itemBinding.root.setOnClickListener { onTickerClick(item.ticker) }
     }

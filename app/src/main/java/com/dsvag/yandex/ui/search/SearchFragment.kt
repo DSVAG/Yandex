@@ -66,17 +66,10 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
 
     private fun stateObserver(state: SearchViewModel.State) {
         when (state) {
-            SearchViewModel.State.Empty -> {
-                stockAdapter.items = listOf(PopularStocksUI(popularStockAdapter))
-            }
-            SearchViewModel.State.Loading -> {
-                stockAdapter.items = shimmersList
-            }
-            is SearchViewModel.State.Success -> {
-                stockAdapter.items = state.stocks.map { StockUI(it) }
-            }
+            SearchViewModel.State.Empty -> stockAdapter.items = listOf(PopularStocksUI(popularStockAdapter))
+            SearchViewModel.State.Loading -> stockAdapter.items = shimmersList
+            is SearchViewModel.State.Success -> stockAdapter.items = state.stocks.map { StockUI(it) }
             is SearchViewModel.State.Error -> throwError(state.errorType)
-
         }
     }
 
@@ -94,14 +87,18 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
 
     private companion object {
         val shimmersList = listOf(
-            ShimmerStockUI(uId = "0"), ShimmerStockUI(uId = "1"), ShimmerStockUI(uId = "2"),
-            ShimmerStockUI(uId = "3"), ShimmerStockUI(uId = "4")
+            ShimmerStockUI(uId = "0"), ShimmerStockUI(uId = "1"),
+            ShimmerStockUI(uId = "2"), ShimmerStockUI(uId = "3"),
+            ShimmerStockUI(uId = "4")
         )
 
         val popularTicker = listOf(
-            TickerUI("Apple"), TickerUI("Amazon"), TickerUI("Google"), TickerUI("Tesla"),
-            TickerUI("Facebook"), TickerUI("Mastercard"), TickerUI("Alibaba"), TickerUI("GM"),
-            TickerUI("Microsoft"), TickerUI("Visa"), TickerUI("Intel"),
+            TickerUI("Apple"), TickerUI("Amazon"),
+            TickerUI("Google"), TickerUI("Tesla"),
+            TickerUI("Facebook"), TickerUI("Mastercard"),
+            TickerUI("Alibaba"), TickerUI("GM"),
+            TickerUI("Microsoft"), TickerUI("Visa"),
+            TickerUI("Intel"),
         )
     }
 }

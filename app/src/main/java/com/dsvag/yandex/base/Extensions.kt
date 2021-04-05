@@ -12,6 +12,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.onStart
+import java.math.BigDecimal
+
+typealias Charts = Pair<List<Pair<Long, BigDecimal>>, List<Pair<Long, BigDecimal>>>
 
 @ExperimentalCoroutinesApi
 fun EditText.textChanges(): Flow<CharSequence?> = callbackFlow<CharSequence?> {

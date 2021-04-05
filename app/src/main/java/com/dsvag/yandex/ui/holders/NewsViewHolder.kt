@@ -22,7 +22,7 @@ class NewsViewHolder(private val itemBinding: ItemNewsBinding) : BaseViewHolder<
 
     private val context = itemBinding.root.context
 
-    override fun bind(item: NewsUI) {
+    override fun bind(item: NewsUI, oldItem: NewsUI?) {
         itemBinding.root.backgroundTintList = if (adapterPosition % 2 == 0) {
             ColorStateList.valueOf(context.getColor(R.color.grey_light))
         } else {

@@ -17,7 +17,7 @@ class ShimmerStockViewHolder(
 
     private val context = itemBinding.root.context
 
-    override fun bind(item: ShimmerStockUI) {
+    override fun bind(item: ShimmerStockUI, oldItem: ShimmerStockUI?) {
         itemBinding.root.startShimmer()
 
         itemBinding.root.backgroundTintList = if (adapterPosition % 2 == 0) {

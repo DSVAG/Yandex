@@ -12,4 +12,6 @@ data class MarketData(
     val percentChange: Double?,
     @Json(name = "price")
     val price: Double,
+    @Json(name = "currencyCode")
+    val currencyCode: String,
 )

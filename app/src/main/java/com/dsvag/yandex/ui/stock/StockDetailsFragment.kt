@@ -7,12 +7,12 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.dsvag.yandex.R
+import com.dsvag.yandex.base.Charts
 import com.dsvag.yandex.base.ErrorType
 import com.dsvag.yandex.base.recyclerview.Adapter
 import com.dsvag.yandex.base.recyclerview.ViewTyped
 import com.dsvag.yandex.base.showToast
 import com.dsvag.yandex.databinding.FragmentStockDetailsBinding
-import com.dsvag.yandex.models.yandex.chart.response.Candles
 import com.dsvag.yandex.models.yandex.stock.response.StockResponse
 import com.dsvag.yandex.ui.MainHolderFactory
 import com.dsvag.yandex.ui.holders.ChartUI
@@ -68,7 +68,7 @@ class StockDetailsFragment : Fragment(R.layout.fragment_stock_details) {
         }
     }
 
-    private fun setData(stockResponse: StockResponse, charts: Pair<Candles, Candles>) {
+    private fun setData(stockResponse: StockResponse, charts: Charts) {
         binding.shimmer.hideShimmer()
         binding.ticker.text = stockResponse.data.instruments.metaData.ticker
         binding.company.text = stockResponse.data.instruments.metaData.displayName

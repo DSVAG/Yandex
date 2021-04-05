@@ -3,6 +3,7 @@ package com.dsvag.yandex.models
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.math.BigDecimal
 
 @Entity(tableName = "Stocks")
 data class Stock(
@@ -20,13 +21,13 @@ data class Stock(
     val ticker: String,
 
     @ColumnInfo(name = "price")
-    val price: Double,
+    val price: BigDecimal = BigDecimal.ZERO,
 
     @ColumnInfo(name = "priceChange")
-    val priceChange: Double,
+    val priceChange: BigDecimal= BigDecimal.ZERO,
 
     @ColumnInfo(name = "priceChangePercent")
-    val priceChangePercent: Double,
+    val priceChangePercent: BigDecimal= BigDecimal.ZERO,
 
     @ColumnInfo(name = "isFavorite")
     val isFavorite: Boolean = false,

@@ -5,5 +5,5 @@ interface ViewTyped {
         get() = error("provide viewType $this")
 
     val uId: String
-        get() = error("provide uID for viewType $this")
+        get() = error("provide uId for viewType $this")
 }

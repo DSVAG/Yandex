@@ -14,6 +14,12 @@ abstract class BaseAdapter<T : ViewTyped>(internal val holderFactory: HolderFact
 
     override fun onBindViewHolder(holder: BaseViewHolder<ViewTyped>, position: Int) = holder.bind(items[position])
 
+    override fun onBindViewHolder(holder: BaseViewHolder<ViewTyped>, position: Int, payloads: MutableList<Any>) {
+        @Suppress("UNCHECKED_CAST")
+        val oldItem = payloads.lastOrNull() as T?
+        holder.bind(items[position], oldItem)
+    }
+
     override fun getItemCount(): Int = items.size
 
 }

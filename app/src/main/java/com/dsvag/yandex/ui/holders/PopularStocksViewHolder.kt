@@ -16,7 +16,7 @@ class PopularStocksViewHolder(
     private val itemBiding: ItemPopularStocksBinding
 ) : BaseViewHolder<PopularStocksUI>(itemBiding.root) {
 
-    override fun bind(item: PopularStocksUI) {
+    override fun bind(item: PopularStocksUI, oldItem: PopularStocksUI?) {
         itemBiding.tickerList.adapter = item.adapter
     }
 }

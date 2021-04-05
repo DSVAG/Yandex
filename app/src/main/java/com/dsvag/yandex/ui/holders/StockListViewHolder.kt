@@ -16,7 +16,7 @@ class StockListViewHolder(
     private val itemBinding: ItemStockListBinding,
 ) : BaseViewHolder<StockListUI>(itemBinding.root) {
 
-    override fun bind(item: StockListUI) {
+    override fun bind(item: StockListUI, oldItem: StockListUI?) {
         itemBinding.stockList.adapter = item.adapter
     }
 }

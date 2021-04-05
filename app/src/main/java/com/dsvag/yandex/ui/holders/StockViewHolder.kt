@@ -12,6 +12,7 @@ import com.dsvag.yandex.base.recyclerview.BaseViewHolder
 import com.dsvag.yandex.base.recyclerview.ViewTyped
 import com.dsvag.yandex.databinding.ItemStockBinding
 import com.dsvag.yandex.models.Stock
+import java.math.BigDecimal
 
 data class StockUI(
     val stock: Stock,
@@ -26,8 +27,9 @@ class StockViewHolder(
 
     private val context = itemBinding.root.context
 
-    override fun bind(item: StockUI) {
+    override fun bind(item: StockUI, oldItem: StockUI?) {
         val stock = item.stock
+        val oldStock = oldItem?.stock
 
         itemBinding.ticker.text = stock.ticker
         itemBinding.company.text = stock.company
@@ -44,11 +46,13 @@ class StockViewHolder(
 
         itemBinding.isFavorite.isChecked = stock.isFavorite
 
-        itemBinding.logo.load("https://yastatic.net/s3/fintech-icons/1/i/${stock.logo}.svg") {
-            crossfade(true)
-            decoder(SvgDecoder(context))
-            error(R.drawable.ic_error)
-            transformations(RoundedCornersTransformation(48F))
+        if (stock.logo != oldStock?.logo) {
+            itemBinding.logo.load("https://yastatic.net/s3/fintech-icons/1/i/${stock.logo}.svg") {
+                crossfade(true)
+                decoder(SvgDecoder(context))
+                error(R.drawable.ic_error)
+                transformations(RoundedCornersTransformation(48F))
+            }
         }
 
         itemBinding.root.backgroundTintList = if (adapterPosition % 2 == 0) {
@@ -58,11 +62,11 @@ class StockViewHolder(
         }
 
         when {
-            stock.priceChange > 0 -> {
+            stock.priceChange > BigDecimal.ZERO -> {
                 itemBinding.declined.setTextColor(context.getColor(R.color.green))
                 itemBinding.trending.load(R.drawable.ic_trending_up)
             }
-            stock.priceChange < 0 -> {
+            stock.priceChange < BigDecimal.ZERO -> {
                 itemBinding.declined.setTextColor(context.getColor(R.color.red))
                 itemBinding.trending.load(R.drawable.ic_trending_down)
             }

@@ -1,6 +1,5 @@
 package com.dsvag.yandex.models.yandex.stockPrice.response
 
-
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
@@ -11,5 +10,7 @@ data class MarketData(
     @Json(name = "percentChange")
     val percentChange: Double,
     @Json(name = "price")
-    val price: Double
+    val price: Double,
+    @Json(name = "currencyCode")
+    val currencyCode: String,
 )

@@ -16,7 +16,7 @@ class NewsListViewHolder(
     private val itemBinding: ItemNewsListBinding
 ) : BaseViewHolder<NewsListUI>(itemBinding.root) {
 
-    override fun bind(item: NewsListUI) {
+    override fun bind(item: NewsListUI, oldItem: NewsListUI?) {
         itemBinding.newsList.adapter = item.adapter
     }
 }
